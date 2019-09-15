@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('linter') {
             steps {
-                echo 'Building..'
+                sh 'git diff master --name-only | grep '.yml$' | grep -v 'meta' | xargs ansible-lint -x 703,701'
             }
         }
     }
