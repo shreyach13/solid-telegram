@@ -4,19 +4,18 @@
   package:
     name: default-jre
     state: present
-#- name: install python3
-#  package:
-#    name: python3
-#    state: present
-#- name: install python3-setuptools
-#  package:
-#    name: python-setuptools
-#    state: present
-#- name: install python3-pip packages
-#  pip:
-#    name: virtualenv
-#    state: present
-#    executable: pip3
+- name: install python3
+  package:
+    name: python3
+    state: present
+- name: install python3-setuptools
+  package:
+    name: python-setuptools
+    state: present
+- name: install python-pip packages
+  package:
+    name: python-pip
+    state: present
 - name: Download jenkins.war
   get_url:
     url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
@@ -27,3 +26,13 @@
     dest: /etc/systemd/system/jenkins.service
   notify:
     - Restart Jenkins
+- name: Flush Handlers
+  meta: flush_handlers
+- name: Wait until the password file shows up
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+- shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: result
+#- debug:
+#   msg: test
+#    verbosity: 2
