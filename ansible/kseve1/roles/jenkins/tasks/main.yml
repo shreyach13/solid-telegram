@@ -18,3 +18,6 @@
     dest: /etc/systemd/system/jenkins.service
   notify:
     - restart_jenkins
+- name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
