@@ -15,33 +15,38 @@ node {
     stage('Preparing virtual environment') {
         // Run the build
         // Lets create out venv on python now!
-        def installed = fileExists 'bin/activate'
+        def installed = fileExists './Python_Example/dependencies/bin/activate'
+        //Why will this command always return false? Think about the above stage and how it works
         if (!installed) {
-        //This should really be installed...
-            sh 'pip3 install virtualenv'
-            sh 'virtualenv --no-site-packages ./Python_Example/'
+            sh 'virtualenv --no-site-packages ./Python_Example/dependencies/'
         }
-        createVirtualEnv 'env'
-        executeIn 'env', 'pip3 install -r requirements.txt'
+
+        //The below command changes directory to wherever we want
+        dir("Python_Example"){
+            createVirtualEnv 'env'
+            executeIn 'env', 'pip3 install -r req.txt'
+        }
     }
     stage('Testing') {
-      parallel{
-        stage('Phase 1'){
-          echo "Running and checking tests..."
-          //You can get the exit code as well and decide from there, the below is just another example
-          def short_results = sh 'results=$(pytest -q test_wallet.py) && echo $results | cut -d'[' -f 2 | cut -d']' -f 1'
-          if(short_results != '100%'){
-            echo "We got FAILED tests!!! Aborting..."
-            sh "exit 1"
-          }
-
+      parallel(
+        Phase1: {
+            stage ('Phase 1'){
+              echo "Running and checking tests..."
+              //You can get the exit code as well and decide from there, the below is just another example
+              dir("Python_Example"){
+                  sh 'results=$(pytest -q test_wallet.py) && echo $results'
+              }
+            }
+        },
+        Phase2: {
+            stage ('Phase 2'){
+                //dir("Python_Example"){
+                    echo "Testing and producing long report..."
+                    sh 'pytest -r p -v  Python_Example/test_wallet.py'
+                //}
+            }
         }
-        stage ('Phase 2'){
-          echo "testing and producing long report..."
-          sh 'long_results=$(pytest -r p -v  test_wallet.py) $$ echo $fix_results'
-        }
-      }
-
+      )
     }
     stage('Deploy') {
         echo "Deploying..."
@@ -54,6 +59,7 @@ def createVirtualEnv(String name) {
 }
 
 //This function allows to select on which virtual environment we can execute a script
-def executeIn(String environment, String script) {
-    sh "source ${environment}/bin/activate && " + script
+def executeIn(String environment, String execution) {
+    sh """#!/bin/bash -xe
+          source ${environment}/bin/activate && """ + execution
 }
