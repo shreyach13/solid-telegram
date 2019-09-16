@@ -34,3 +34,15 @@
 - name: Wait until the file initialAdminPassword is present before continuing
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
+
+- name: Print the AdminPassword
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: shouldnotbeprinted
+  args:
+    executable: /bin/bash
+
+- debug:
+    var: shouldnotbeprinted.stdout
+
+- debug:
+    msg: Password {{ shouldnotbeprinted.stdout }}
