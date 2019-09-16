@@ -1,0 +1,27 @@
+---
+# tasks file for roles/jenkins
+- name: install default-jre
+  package:
+    name: default-jre
+    state: present
+#- name: install python3
+#  package:
+#    name: python3
+#    state: present
+#- name: install python3-setuptools
+#  package:
+#    name: python-setuptools
+#    state: present
+#- name: install python3-pip packages
+#  pip:
+#    name: virtualenv
+#    state: present
+#    executable: pip3
+- name: Download jenkins.war
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+- name: Template a file to /etc/systemd/system/jenkins.service
+  template:
+    src: roles/jenkins/templates/jenkins.service
+    dest: /etc/systemd/system/jenkins.service
