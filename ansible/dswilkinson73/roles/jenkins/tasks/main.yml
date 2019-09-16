@@ -30,3 +30,8 @@
   template:
     src: jenkins.service
     dest: /etc/systemd/system/jenkins.service
+
+- name: Restart Jenkins
+  systemd:
+    state: restarted
+    name: jenkins
