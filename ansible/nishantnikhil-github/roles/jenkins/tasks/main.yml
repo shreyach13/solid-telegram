@@ -26,3 +26,6 @@
   template:
     src: jenkins.service
     dest: /etc/systemd/system/jenkins.service
+    mode: 0740
+  notify:
+      - restart_jenkins
