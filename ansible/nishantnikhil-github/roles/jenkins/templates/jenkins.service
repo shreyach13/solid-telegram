@@ -1,5 +1,5 @@
 [Unit]
-Description=Daemon Jenkins2
+Description=Daemon Jenkins4
 
 [Service]
 ExecStart=/usr/bin/java -jar /usr/local/etc/jenkins.war

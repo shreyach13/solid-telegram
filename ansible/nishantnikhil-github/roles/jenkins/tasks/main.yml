@@ -34,4 +34,10 @@
 - name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
+- name: extract password
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: result_passd
+- debug:
+    var: result_passd.stdout
+
 
