@@ -25,3 +25,9 @@
 - name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
+
+- name: Run a command that uses non-posix shell-isms (in this example /bin/sh doesn't handle redirection and wildcards together but bash does)
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: foo_result
+- debug:
+    msg: Password is  {{ foo_result.stdout }} 
