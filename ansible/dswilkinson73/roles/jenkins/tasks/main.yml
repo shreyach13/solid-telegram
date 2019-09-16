@@ -4,3 +4,8 @@
   package:
     name: default-jre
     state: present
+- name: install pip packages
+  pip:
+    name: virtualenv
+    state: present
+    executable: pip3
