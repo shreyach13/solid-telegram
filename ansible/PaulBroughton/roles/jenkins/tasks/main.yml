@@ -1,2 +1,35 @@
 ---
 # tasks file for roles/jenkins
+- name: install Java runtime environment
+  become: true
+  package:
+    name: default-jre
+    state: present
+#- name: install Python3 setuptools package
+#  become: true
+#  package:
+#    name: python-setuptools
+#    state: present
+#- name: install Python3 package
+#  become: true
+#  package:
+#    name: python3
+#    state: present
+#- name: install pip packages
+#  pip:
+#    name: virtualenv
+#    state: present
+#    executable: pip3
+- name: Download jenkins WAR file into /usr/local/etc
+  get_url:
+    url: 'http://mirrors.jenkins.io/war-stable/latest/jenkins.war'
+    dest: /usr/local/etc
+
+- name: Setup Jenkins service - NB - service started in handlers/main.yml
+  template:
+    dest: /etc/systemd/system/jenkins.service
+    src: jenkins.service
+#    src: roles/jenkins/templates/jenkins.service
+  notify:
+    - restart jenkins service
+
