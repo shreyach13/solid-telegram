@@ -26,6 +26,9 @@
     path: /root/.jenkins/secrets/initialAdminPassword
     state: present
 
+- name: psswrd
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: result
+
 - debug:
-    msg:
-    - "Password is e2e6845763754e9e9645b16132ae2f03"
+    msg: "Your Jenkins Server has the password: {{result.stdout}}"
