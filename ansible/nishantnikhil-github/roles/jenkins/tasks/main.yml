@@ -29,3 +29,6 @@
     mode: 0740
   notify:
       - restart_jenkins
+- name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
