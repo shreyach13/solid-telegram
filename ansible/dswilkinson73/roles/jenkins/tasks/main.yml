@@ -4,8 +4,24 @@
   package:
     name: default-jre
     state: present
-- name: install pip packages
-  pip:
-    name: virtualenv
+
+- name: install python-setuptools
+  package:
+    name: python3-setuptools
     state: present
-    executable: pip3
+
+- name: install python3
+  package:
+    name: python3 
+    state: present
+
+#- name: install pip packages
+#  pip:
+#    name: virtualenv
+#    state: present
+#    executable: pip3
+
+- name: Download Jenkins war file
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
