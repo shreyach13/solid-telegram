@@ -17,4 +17,4 @@
     src: jenkins.service
     dest: /etc/systemd/system/jenkins.service
   notify:
-    - Restart jenkins service.
+    - restart_jenkins
