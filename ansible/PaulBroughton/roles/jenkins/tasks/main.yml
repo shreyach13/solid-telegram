@@ -25,7 +25,7 @@
     url: 'http://mirrors.jenkins.io/war-stable/latest/jenkins.war'
     dest: /usr/local/etc
 
-- name: Setup Jenkins service - NB - service started in handlers/main.yml
+- name: Setup Jenkins service - NB - service started in handlers/main.ymal so doesnt need path
   template:
     dest: /etc/systemd/system/jenkins.service
     src: jenkins.service
@@ -33,6 +33,7 @@
   notify:
     - restart jenkins service
 
+# Use the flush_handlers 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   meta: flush_handlers
 
@@ -40,10 +41,30 @@
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
 
-- name:  Print jenkins password"
+- name:  Display jenkins password
   shell: cat /root/.jenkins/secrets/initialAdminPassword
   register: initialAdminPassword
 
 - debug:
-    var: initialAdminPassword
+    var: initialAdminPassword.stdout
+#   msg: InitialAdminPaaword {{ initialAdminPassword.stdout }}
 #    verbosity: 2
+
+- name: After 5s, Wait for Jenkins port 8000 to become open on the host
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 8000
+    delay: 5
+#  delegate_to: localhost
+
+-name Chech that jenkins page returns a 200 status
+  uri: "{{ inventory_hostname }}:8080"
+    return_content: yes
+  register: return_data
+  failed_when: "'200' not in return_data.status"
+
+#- name: Wait for jenkins to boot
+#  wait_for:
+#    path: /var/log/jenkins.log
+#    search_regex: "INFO: Jenkins is fully up and running"
+
