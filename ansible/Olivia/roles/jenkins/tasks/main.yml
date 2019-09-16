@@ -1,0 +1,31 @@
+---
+# tasks file for roles/jenkins
+- name: install java
+  package:
+    name: default-jre
+    state: present
+
+- name: Download foo.conf
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+    mode: '0440'
+
+- name: deploy-template
+  template:
+    src: roles/jenkins/templates/jenkins.service
+    dest: /etc/systemd/system/jenkins.service
+  notify:
+    - restart jenkins
+
+- name: Force all notified handlers to run
+  meta: flush_handlers
+
+- name: Wait until the lock file is present
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+    state: present
+
+- debug:
+    msg:
+    - "Password is e2e6845763754e9e9645b16132ae2f03"
