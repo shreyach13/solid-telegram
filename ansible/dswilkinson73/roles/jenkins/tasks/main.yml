@@ -32,7 +32,7 @@
   notify:
     - RestartJenkins_Handler
 
-- name: Flushing of handlers 1
+- name: Flushing of handlers
   meta: flush_handlers
 
 - name: Wait for the password file
@@ -41,4 +41,6 @@
 
 - name: Display the Jenkins Password
   shell: cat /root/.jenkins/secrets/initialAdminPassword
-
+  register: result
+- debug:
+    msg: "{{ result.stdout }}"  
