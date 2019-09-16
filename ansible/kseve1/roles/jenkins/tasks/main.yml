@@ -18,6 +18,8 @@
     dest: /etc/systemd/system/jenkins.service
   notify:
     - restart_jenkins
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers
 - name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
