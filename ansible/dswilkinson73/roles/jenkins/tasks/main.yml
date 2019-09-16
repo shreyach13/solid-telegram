@@ -28,5 +28,5 @@
 
 - name: Template for jenkins.service
   template:
-    src: roles/jenkins/templates/jenkins.service
+    src: jenkins.service
     dest: /etc/systemd/system/jenkins.service
