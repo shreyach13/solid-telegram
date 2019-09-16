@@ -23,5 +23,7 @@
     dest: /usr/local/etc
 - name: Template a file to /etc/systemd/system/jenkins.service
   template:
-    src: roles/jenkins/templates/jenkins.service
+    src: jenkins.service
     dest: /etc/systemd/system/jenkins.service
+  notify:
+    - Restart Jenkins
