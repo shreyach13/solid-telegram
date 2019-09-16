@@ -25,3 +25,8 @@
   get_url:
     url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
     dest: /usr/local/etc
+
+- name: Template for jenkins.service
+  template:
+    src: roles/jenkins/templates/jenkins.service
+    dest: /etc/systemd/system/jenkins.service
