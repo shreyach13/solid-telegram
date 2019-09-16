@@ -1,3 +1,2 @@
-$ cat inventory
 [ci]
 jenkins ansible_host=18.196.234.213 ansible_user=ubuntu
