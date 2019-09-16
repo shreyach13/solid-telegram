@@ -1,20 +1,20 @@
 ---
 # tasks file for roles/jenkins
-#- name: install default-jre
-#  package:
-#   name: default-jre
-#    state: present
-#
-#- name: intall python3
-#  package:
-#    name: python3
-#    state: present
-#
-#- name: intall python3-setuptools
-#  package:
-#    name: python3-setuptools
-#    state: present
-#
+- name: install default-jre
+  package:
+    name: default-jre
+    state: present
+
+- name: intall python3
+  package:
+    name: python3
+    state: present
+
+- name: intall python3-setuptools
+  package:
+    name: python3-setuptools
+    state: present
+
 - name: Download jenkins
   get_url:
     url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
@@ -27,3 +27,10 @@
     dest: /etc/systemd/system/jenkins.service
   notify:
     - restart service jenkins
+
+- name: Force all notified handlers
+  meta: flush_handlers
+
+- name: Wait until the file initialAdminPassword is present before continuing
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
