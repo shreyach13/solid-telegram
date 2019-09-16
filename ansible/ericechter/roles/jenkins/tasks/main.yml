@@ -33,6 +33,5 @@
     path: /root/.jenkins/secrets/initialAdminPassword
 - shell: cat /root/.jenkins/secrets/initialAdminPassword
   register: result
-#- debug:
-#   msg: test
-#    verbosity: 2
+- debug:
+    msg: "Password: {{ result.stdout }}"
