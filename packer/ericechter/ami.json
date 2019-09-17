@@ -32,7 +32,7 @@
   },
     {
       "type": "ansible",
-      "roles_path": "/Users/eric.echter/github/solid-telegram/ansible/ericechter/roles",
-      "playbook_file": "/Users/eric.echter/github/solid-telegram/ansible/ericechter/roles/vault/vault.yml"
+      "extra_arguments": "-b",
+      "playbook_file": "/Users/eric.echter/github/solid-telegram/packer/ericechter/roles/vault.yml"
     }]
 }
