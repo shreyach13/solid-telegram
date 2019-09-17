@@ -32,7 +32,7 @@
   },
   {
     "type": "ansible",
-    "playbook_file": "../ansible/kseve1/jenkins.yml",
+    "playbook_file": "../ansible/kseve1/roles/jenkins/tasks/main.yml",
     "roles_path": "../ansible/roles/vault"
   }
   ]
