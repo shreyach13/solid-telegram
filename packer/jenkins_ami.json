@@ -19,21 +19,15 @@
     },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "eddy_image_run3"
+    "ami_name": "eddy_jenkins_image_run1_{{isotime \"2006-01-30\"}}"
   }],
 "provisioners": [{
   "type": "shell",
-  "inline": ["echo Downloading zip file",
-  "curl https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip > /tmp/vault_1.2.2_linux_amd64.zip",
-  "sudo apt-get install -y unzip",
-  "cd /tmp",
-  "sudo unzip /tmp/vault_1.2.2_linux_amd64.zip",
-  "sudo mv /tmp/vault /usr/local/bin",
-  "nohup vault server -dev &"]
+  "inline": ["echo Downloading zip file"]
   },
   {
     "type": "ansible",
-    "playbook_file": "/Users/eddy.niemeijer/mike_foobar/solid-telegram/packer/roles/vault/vault.yml",
+    "playbook_file": "/Users/eddy.niemeijer/mike_foobar/solid-telegram/ansible/eddyniemeijer/jenkins.yml",
     "extra_arguments": [ "-b" ]
   }]
 }
