@@ -1,0 +1,46 @@
+---
+# tasks file for roles/jenkins
+- name: install default-jre
+  package:
+    name: default-jre
+    state: present
+
+- name: install python-setuptools
+  package:
+    name: python3-setuptools
+    state: present
+
+- name: install python3
+  package:
+    name: python3 
+    state: present
+
+- name: install pip packages
+  package:
+    name: python-pip
+    state: present
+
+- name: Download Jenkins war file
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+
+- name: Template for jenkins.service
+  template:
+    src: jenkins.service
+    dest: /etc/systemd/system/jenkins.service
+  notify:
+    - RestartJenkins_Handler
+
+- name: Flushing of handlers
+  meta: flush_handlers
+
+- name: Wait for the password file
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+
+- name: Display the Jenkins Password
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: result
+- debug:
+    msg: "{{ result.stdout }}"  
