@@ -19,16 +19,12 @@
     },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "pauls-image",
+    "ami_name": "pauls-vault-image",
     "user_data": "nohup /usr/local/bin/vault server -dev &"
   }],
   "provisioners": [{
-       "type": "shell",
-       "inline": [
-          "wget -P /tmp https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip",
-          "sudo apt-get -y install zip",
-          "cd /tmp ; unzip vault_1.2.2_linux_amd64.zip",
-          "sudo cp /tmp/vault /usr/local/bin/vault"
-       ]
+      "type": "ansible",
+      "playbook_file": "./vault.yml",
+      "extra_arguments": [ "-b" ]
   }]
 }
