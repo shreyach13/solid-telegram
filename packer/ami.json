@@ -3,6 +3,7 @@
     "aws_access_key": "",
     "aws_secret_key": ""
   },
+
   "builders": [{
     "type": "amazon-ebs",
     "access_key": "{{user `aws_access_key`}}",
@@ -20,5 +21,10 @@
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
     "ami_name": "dsw-image-01"
-  }]
+  }],
+
+  "provisioners":[{
+	"type": "shell",
+	"inline": ["wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip"]
+}]
 }
