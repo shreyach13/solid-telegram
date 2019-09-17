@@ -6,12 +6,12 @@
     state: present
 - name: Download file and force basic auth
   get_url:
-    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war 
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
     dest: /usr/local/etc
 - name: Template a file to /etc/systemd/system/jenkins.service
   template:
     src: text.txt
-    dest: /etc/systemd/system/jenkins.service 
+    dest: /etc/systemd/system/jenkins.service
   notify:
     - restart jenkins
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
@@ -21,3 +21,9 @@
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
 
+- name: Run a command to display the password
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: output
+
+- debug:
+    msg: System {{ output.stdout_lines }}
