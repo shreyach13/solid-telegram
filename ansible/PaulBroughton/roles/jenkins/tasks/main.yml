@@ -57,11 +57,11 @@
     delay: 5
 #  delegate_to: localhost
 
--name Chech that jenkins page returns a 200 status
-  uri: "{{ inventory_hostname }}:8080"
-    return_content: yes
-  register: return_data
-  failed_when: "'200' not in return_data.status"
+#- name: Check that jenkins page returns a 200 status
+#  uri: "{{ inventory_hostname }}:8080"
+#    return_content: yes
+#  register: return_data
+#  failed_when: "'200' not in return_data.status"
 
 #- name: Wait for jenkins to boot
 #  wait_for:
