@@ -20,7 +20,7 @@
 	 },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "dsw-image-01",
+    "ami_name": "dsw-image-02",
 	"user_data": "nohup vault server &"
   }],
 
@@ -35,7 +35,8 @@
 
 {
 "type": "ansible",
-"playbook_file": "roles/vault/vault.yml"
+"playbook_file": "roles/vault/vault.yml",
+"extra_arguments": ["-b"]
 }]
 }
 
