@@ -1,0 +1,65 @@
+#!/usr/bin/env groovy
+//This pipeline assumes there is only one master node
+node {
+    stage('Preparation') { // for display purposes
+        // Get some code from a GitHub repository
+        //The checkout step will checkout a specific branch by specifiying on the branches parameter
+        //it will clean up the workspace to ensure that no residual files are left (I have used a htpps link but it should used with its own ssh key)
+        //and will clone from the required repo
+        checkout([$class: 'GitSCM',
+        branches: [[name: 'origin/master']],
+        extensions: [[$class: 'WipeWorkspace']],
+        userRemoteConfigs: [[url: 'https://github.com/mhristof/solid-telegram.git']]
+        ])
+        }
+    stage('Preparing virtual environment') {
+        // Run the build
+        // Lets create out venv on python now!
+        def installed = fileExists './Python_Example/dependencies/bin/activate'
+        //Why will this command always return false? Think about the above stage and how it works
+        if (!installed) {
+            sh 'virtualenv --no-site-packages ./Python_Example/dependencies/'
+        }
+
+        //The below command changes directory to wherever we want
+        dir("Python_Example"){
+            createVirtualEnv 'env'
+            executeIn 'env', 'pip3 install -r req.txt'
+        }
+    }
+    stage('Testing') {
+      parallel(
+        Phase1: {
+            stage ('Phase 1'){
+              echo "Running and checking tests..."
+              //You can get the exit code as well and decide from there, the below is just another example
+              dir("Python_Example"){
+                  sh 'results=$(pytest -q test_wallet.py) && echo $results'
+              }
+            }
+        },
+        Phase2: {
+            stage ('Phase 2'){
+                //dir("Python_Example"){
+                    echo "Testing and producing long report..."
+                    sh 'pytest -r p -v  Python_Example/test_wallet.py'
+                //}
+            }
+        }
+      )
+    }
+    stage('Deploy') {
+        echo "Deploying..."
+    }
+}
+
+//This will allow us to create a new virtual environment
+def createVirtualEnv(String name) {
+    sh "virtualenv ${name}"
+}
+
+//This function allows to select on which virtual environment we can execute a script
+def executeIn(String environment, String execution) {
+    sh """#!/bin/bash -xe
+          source ${environment}/bin/activate && """ + execution
+}
