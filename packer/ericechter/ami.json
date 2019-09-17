@@ -26,8 +26,13 @@
     "inline": [
       "cd /tmp",
       "wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip",
-      "unzip vault_1.2.2_linux_amd64.zip"
+      "sudo apt-get install -y unzip",
+      "sudo unzip vault_1.2.2_linux_amd64.zip"
     ]
-    "user_data": ["nohup vault server -dev &"]
-  }]
+  },
+    {
+      "type": "ansible",
+      "roles_path": "/Users/eric.echter/github/solid-telegram/ansible/ericechter/roles",
+      "playbook_file": "/Users/eric.echter/github/solid-telegram/ansible/ericechter/roles/vault/vault.yml"
+    }]
 }
