@@ -19,14 +19,20 @@
     },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "eddy_image"
+    "ami_name": "eddy_image_run3"
   }],
 "provisioners": [{
   "type": "shell",
-  "inline": ["echo Downloading zip file"],
-  "inline": ["curl https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip > /tmp/vault_1.2.2_linux_amd64.zip"],
-  "inline": ["unzip /tmp/vault_1.2.2_linux_amd64.zip"],
-  "inline": ["mv vault /usr/local/bin"],
-  "inline": ["nohup vault server -dev &"]
+  "inline": ["echo Downloading zip file",
+  "curl https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip > /tmp/vault_1.2.2_linux_amd64.zip",
+  "sudo apt-get install -y unzip",
+  "cd /tmp",
+  "sudo unzip /tmp/vault_1.2.2_linux_amd64.zip",
+  "sudo mv /tmp/vault /usr/local/bin",
+  "nohup vault server -dev &"]
+  },
+  {
+    "type": "ansible",
+    "playbook_file": "../ansible/eddyniemeijer/jenkins.yml"
   }]
 }
