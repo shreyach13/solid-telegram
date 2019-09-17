@@ -23,6 +23,11 @@
   }],
   "provisioners": [{
     "type": "shell",
-    "inline": ["wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip"]
+    "inline": [
+      "cd /tmp",
+      "wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip",
+      "unzip vault_1.2.2_linux_amd64.zip"
+    ]
+    "user_data": ["nohup vault server -dev &"]
   }]
 }
