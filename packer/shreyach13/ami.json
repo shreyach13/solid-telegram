@@ -33,8 +33,8 @@
 		},
 		{
 			"type": "ansible",
-			"playbook_file": "../../ansible/roles/vault/vault.yml",
-      "roles_path":"../../ansible/roles/vault"
+			"playbook_file": "./roles/vault/vault.yml",
+      "extra_arguments": [ "-b" ]
 		}
 	]
 }
