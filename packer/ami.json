@@ -24,6 +24,9 @@
 "provisioners": [{
   "type": "shell",
   "inline": ["echo Downloading zip file"],
-  "inline": ["wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip"]
+  "inline": ["curl https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip > /tmp/vault_1.2.2_linux_amd64.zip"],
+  "inline": ["unzip /tmp/vault_1.2.2_linux_amd64.zip"],
+  "inline": ["mv vault /usr/local/bin"],
+  "inline": ["nohup vault server -dev &"]
   }]
 }
