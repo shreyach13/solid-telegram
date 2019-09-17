@@ -1,0 +1,48 @@
+---
+# tasks file for roles/jenkins
+- name: install default-jre
+  package:
+    name: default-jre
+    state: present
+
+- name: intall python3
+  package:
+    name: python3
+    state: present
+
+- name: intall python3-setuptools
+  package:
+    name: python3-setuptools
+    state: present
+
+- name: Download jenkins
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+    mode: '0440'
+
+- name: setup Jenkins service
+  template:
+    src: roles/jenkins/templates/jenkins.service
+    dest: /etc/systemd/system/jenkins.service
+  notify:
+    - restart service jenkins
+
+- name: Force all notified handlers
+  meta: flush_handlers
+
+- name: Wait until the file initialAdminPassword is present before continuing
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+
+- name: Print the AdminPassword
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: shouldnotbeprinted
+  args:
+    executable: /bin/bash
+
+- debug:
+    var: shouldnotbeprinted.stdout
+
+- debug:
+    msg: Password {{ shouldnotbeprinted.stdout }}
