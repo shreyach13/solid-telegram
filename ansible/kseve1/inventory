@@ -1,0 +1,2 @@
+[ci]
+jenkins ansible_host=3.120.224.249 ansible_user=ubuntu
