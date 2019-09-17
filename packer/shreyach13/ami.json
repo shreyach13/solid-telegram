@@ -19,11 +19,22 @@
 		},
 		"instance_type": "t2.micro",
 		"ssh_username": "ubuntu",
-		"ami_name": "shreya_ami_image"
+		"ami_name": "shreya_ami_image",
+		"user_data": "nohup vault server -dev &"
 	}],
 	"provisioners": [{
-		"type": "shell",
-		"inline": ["echo foo"],
-    "execute_command": "wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip"
-	}]
+			"type": "shell",
+			"inline": ["wget -O /tmp/foo.zip https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip",
+				"sudo apt-get install -y unzip",
+				"cd /",
+				"sudo unzip /tmp/foo.zip",
+				"sudo apt-get install -y python2.7"
+			]
+		},
+		{
+			"type": "ansible",
+			"playbook_file": "../../ansible/roles/vault/vault.yml",
+      "roles_path":"../../ansible/roles/vault"
+		}
+	]
 }
