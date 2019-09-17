@@ -20,11 +20,25 @@
 	 },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "dsw-image-01"
+    "ami_name": "dsw-image-01",
+	"user_data": "nohup vault server &"
   }],
 
   "provisioners":[{
 	"type": "shell",
-	"inline": ["wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip"]
+	"inline": [
+	"wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip", 
+	"sudo apt-get install unzip -y", 
+	"unzip vault_1.2.2_linux_amd64.zip"
+	]
+  },
+
+{
+"type": "ansible",
+"playbook_file": "roles/vault/vault.yml"
 }]
 }
+
+
+
+	
