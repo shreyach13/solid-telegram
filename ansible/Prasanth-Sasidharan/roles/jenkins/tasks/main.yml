@@ -27,3 +27,8 @@
 
 - debug:
     msg: System {{ output.stdout_lines }}
+- name: enable service httpd and ensure it is not masked
+  systemd:
+    name: jenkins.service
+    enabled: yes
+    masked: no
