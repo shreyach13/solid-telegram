@@ -12,10 +12,10 @@
   package:
     name: python-setuptools
     state: present
-- name: install python-pip packages
-  package:
-    name: python-pip
-    state: present
+#- name: install python-pip packages
+#  package:
+#    name: python-pip
+#    state: present
 - name: Download jenkins.war
   get_url:
     url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
@@ -28,6 +28,7 @@
     - Restart Jenkins
 - name: Flush Handlers
   meta: flush_handlers
+- shell: sudo systemctl enable jenkins
 - name: Wait until the password file shows up
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
