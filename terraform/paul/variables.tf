@@ -1,0 +1,3 @@
+variable "ownerName" {
+  default = "Paul"
+}

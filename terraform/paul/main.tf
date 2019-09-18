@@ -2,10 +2,6 @@ provider "aws" {
   region = "eu-central-1"
 }
 
-variable "ownerName" {
-  default = "Paul"
-}
-
 resource "aws_instance" "webserver" {
   ami	= "ami-00aa4671cbf840d82"
   instance_type = "t2.micro"
