@@ -9,6 +9,7 @@ resource "aws_instance" "webserver" {
   tags = {
       Name = "Pauls-Webserver"
       owner = var.ownerName
+      manager = var.manager
   }
 }
 
