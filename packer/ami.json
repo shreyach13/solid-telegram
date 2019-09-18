@@ -21,10 +21,12 @@
         "instance_type": "t2.micro",
         "ssh_username": "ubuntu",
         "ami_name": "nishant-image",
-        "user_data": "nohup /home/ubuntu/vault server -dev &"
+        "user_data": "sudo systemctl start jenkins.service"
     }],
     "provisioners": [{
         "type": "ansible",
-        "playbook_file": "/Users/nishant.nikhil/sdubootcamp1/solid-telegram/ansible/roles/vault/vault.yml"
+        "playbook_file": "/Users/nishant.nikhil/sdubootcamp1/solid-telegram/packer/jenkins.yml",
+        "extra_arguments": [ "-b" ]
+
     }]
   }
