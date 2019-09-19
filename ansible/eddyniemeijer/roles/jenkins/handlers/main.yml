@@ -1,0 +1,7 @@
+---
+# handlers file for roles/jenkins
+- name: restart service jenkins
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: jenkins
