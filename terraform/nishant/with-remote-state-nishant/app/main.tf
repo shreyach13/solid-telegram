@@ -5,6 +5,8 @@ provider "aws" {
 module "webserver" {
     source = "../modules/compute"
     server_port = var.server_port
+    //security_group_name = module.security.security_group_name
+
 }
 
 module "security" {
@@ -12,4 +14,3 @@ module "security" {
     from_port = var.from_port
     to_port = var.to_port
 }
-
