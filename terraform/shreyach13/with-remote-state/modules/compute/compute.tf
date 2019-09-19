@@ -12,7 +12,9 @@ resource "aws_instance" "shreya_webserver"{
             nohup busybox httpd -f -p "${var.server_port}" &
             EOF
   #This will change the name of the instance
+  security_groups = [var.security_group_id]
   tags = {
-    Name = "ShreyaSpace"
+    Name = "Red Team"
+    Owner = "RED"
   }
 }
