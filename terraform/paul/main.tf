@@ -2,11 +2,11 @@ provider "aws" {
   region = "eu-central-1"
 }
 
-resource "aws_s3_bucket" "pauls-terraform-state" {
-  bucket = "s3-terraform-state-paul"
+resource "aws_s3_bucket" "green-terraform" {
+  bucket = "green-terraform-20190919"
   region = "eu-central-1"
   tags = {
-      owner = var.ownerName
+      Name = "green-terraform-bucket"
   }
 }
 

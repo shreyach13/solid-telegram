@@ -1,1 +1,0 @@
-ownerName = "override_owner"
