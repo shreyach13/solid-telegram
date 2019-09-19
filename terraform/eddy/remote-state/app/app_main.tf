@@ -5,6 +5,7 @@ provider "aws" {
 module "web_server" {
   source = "../modules/compute"
   server_port = var.server_port
+  my-blue-security-group = module.security.blue-sggroup
 }
 
 module "security" {

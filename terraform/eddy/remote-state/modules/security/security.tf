@@ -1,7 +1,10 @@
 // file: security/security.tf
 
-resource "aws_security_group" "instance" {
-  name = "terraform-instance-eddy-${random_id.myrandom.hex}"
+resource "aws_security_group" "blue-instance-eddy" {
+  name = "blue-terraform-instance-eddy"
+  tags = {
+    name = "blue sggroup Eddy"
+  }
   ingress {
     from_port = var.from_port
     to_port = var.to_port

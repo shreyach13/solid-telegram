@@ -1,3 +1,3 @@
-bucket = "s3-eddy-bucket"
+bucket = "s3-blue-eddy-bucket"
 region = "eu-central-1"
 encrypt = true
