@@ -5,9 +5,10 @@ provider "aws" {
 resource "aws_instance" "webserver" {
     ami = "ami-010fae13a16763bb4"
     instance_type = "t2.micro"
-    #security_groups = ["${aws_security_group.allow_tls_traffic.id}"]
+    security_groups = [var.green_security_group_name]
     tags = {
         Name = "nishant-terraform-instance-remote"
+        Owner = "green-team"
     }
     user_data = <<EOF
                 #!/bin/bash
