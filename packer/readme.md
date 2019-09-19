@@ -1,1 +1,1 @@
-Sample role that installs Vault as a service
+copy over the roles folder into packer/shreyach13, then create an ansible.cfg file in packer folder and write :  [defaults] /n roles_path = ./roles. add extra arguments to make it sudo. Then it will run.
