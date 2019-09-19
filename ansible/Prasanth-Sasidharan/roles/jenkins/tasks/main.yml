@@ -1,0 +1,34 @@
+---
+# tasks file for roles/jenkins
+- name: install java packages
+  package:
+    name: default-jre
+    state: present
+- name: Download file and force basic auth
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+- name: Template a file to /etc/systemd/system/jenkins.service
+  template:
+    src: text.txt
+    dest: /etc/systemd/system/jenkins.service
+  notify:
+    - restart jenkins
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers
+
+- name: Wait until password file created
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+
+- name: Run a command to display the password
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: output
+
+- debug:
+    msg: System {{ output.stdout_lines }}
+- name: enable service httpd and ensure it is not masked
+  systemd:
+    name: jenkins.service
+    enabled: yes
+    masked: no

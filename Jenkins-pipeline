@@ -1,0 +1,31 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Initialization') {
+            steps {
+                sh 'rm -rf .git *'
+                git 'https://github.com/mhristof/solid-telegram.git'
+                
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'javac ./Java_App_Example/hello/HelloWorld.java'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}

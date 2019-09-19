@@ -1,0 +1,39 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "eu-central-1",
+    "source_ami_filter": {
+      "filters": {
+      "virtualization-type": "hvm",
+      "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+      "root-device-type": "ebs"
+    },
+    "owners": ["099720109477"],
+    "most_recent": true
+  },
+  "instance_type": "t2.micro",
+  "ssh_username": "ubuntu",
+  "ami_name": "erik_image_2"
+  }],
+  "provisioners": [
+    {
+    "type": "shell",
+    "inline": ["wget https://releases.hashicorp.com/vault/1.2.2/vault_1.2.2_linux_amd64.zip -O /tmp/vault_1.2.2_linux_amd64.zip",
+    "sudo apt-get install -y unzip",
+    "cd /",
+    "sudo unzip /tmp/vault_1.2.2_linux_amd64.zip",
+    "./vault server -dev &"]
+  },
+  {
+    "type": "ansible",
+    "playbook_file": "roles/vault/vault.yml",
+    "extra_arguments": [ "-b" ]
+  }
+  ]
+}
