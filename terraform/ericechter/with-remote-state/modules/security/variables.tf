@@ -3,9 +3,9 @@ variable "owner" {
 }
 
 variable "from_port" {
-  default = "8081"
+  default = "8080"
 }
 
 variable "to_port" {
-  default = "8081"
+  default = "8080"
 }
