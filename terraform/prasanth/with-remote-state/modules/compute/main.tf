@@ -9,4 +9,7 @@ resource "aws_instance" "webserver" {
      echo "Hello, World" > index.html
      nohup busybox httpd -f -p "${var.server_port}" &
      EOF
+     tags = {
+          Name = "Red3"
+     }
      }
