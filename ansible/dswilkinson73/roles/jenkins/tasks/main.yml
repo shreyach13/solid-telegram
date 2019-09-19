@@ -5,6 +5,7 @@
     name: default-jre
     state: present
 
+
 - name: install python-setuptools
   package:
     name: python3-setuptools
@@ -44,3 +45,8 @@
   register: result
 - debug:
     msg: "{{ result.stdout }}"  
+
+- name: Enable service jenkins
+  service:
+    name: jenkins.service
+    enabled: yes
