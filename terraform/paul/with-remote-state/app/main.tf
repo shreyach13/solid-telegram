@@ -3,7 +3,8 @@ provider "aws" {
 }
 
 module "security" {
-  source = "git::https://github.com/mhristof/security.git?ref=v3.0.0"
+  source = "git::https://github.com/mhristof/security.git"
+  version = "3.0.0"
   from_port = var.from_port
   to_port = var.to_port
 }
