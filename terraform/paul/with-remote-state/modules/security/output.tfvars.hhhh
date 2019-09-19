@@ -1,0 +1,6 @@
+output "to_port" {
+  value=aws_instance.instance.to_port
+}
+output "from_port" {
+  value=aws_instance.instance.from_port
+}
