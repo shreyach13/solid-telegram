@@ -1,5 +1,5 @@
 terraform {
     backend "s3" {
-    key = "oli-core/terraform.tfstate"
+    key = "oli-erik-core/terraform.tfstate"
 }
 }

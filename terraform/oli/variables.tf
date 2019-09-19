@@ -1,3 +1,3 @@
 variable "owner" {
-default = "olivia"
+default = "oli-erik-yellow"
 }

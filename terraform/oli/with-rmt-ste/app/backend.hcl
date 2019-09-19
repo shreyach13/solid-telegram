@@ -1,3 +1,3 @@
-bucket = "terraform-oli1-bucketsdu"
+bucket = "terraform-oli-erik-yellow"
 region = "eu-central-1"
 encrypt = true
