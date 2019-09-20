@@ -19,7 +19,7 @@
     },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "green-jenkins-image-20190920",
+    "ami_name": "green-jenkins-image-20190920-1",
     "tags": {
         "Name": "green",
         "Owner": "green"
