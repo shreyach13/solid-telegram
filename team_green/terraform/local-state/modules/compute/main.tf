@@ -10,4 +10,4 @@ resource "aws_instance" "jenkins_server" {
           Name = "greenteam-jenkinsserver"
           Owner = "green-team"
      }
-     }
+}
