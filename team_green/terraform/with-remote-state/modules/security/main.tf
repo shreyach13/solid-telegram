@@ -11,3 +11,8 @@ resource "aws_security_group" "instance" {
 resource "random_id" "myrandom" {
  byte_length = 3
 }
+
+tags = {
+    Name = "green"
+    owner = "green team"
+}
