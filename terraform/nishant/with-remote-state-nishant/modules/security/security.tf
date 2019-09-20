@@ -1,4 +1,4 @@
-resource "aws_security_group" "instance" {
+resource "aws_security_group" "green_security_group" {
     name = "terraform-instance-${random_id.myrandom.hex}"
     ingress {
         from_port = var.from_port
