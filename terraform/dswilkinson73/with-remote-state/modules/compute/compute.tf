@@ -13,7 +13,5 @@ resource "aws_instance" "web_server" {
   security_groups = [var.security_group_id]
   tags = {
     Name = "Red2"
-}
-
-
   }
+}
