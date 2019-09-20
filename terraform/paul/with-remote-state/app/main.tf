@@ -3,13 +3,14 @@ provider "aws" {
 }
 
 module "security" {
-  source = "../modules/security"
-//  from_port = var.server_port
-//  to_port = var.server_port
+  source = "git::https://github.com/mhristof/security.git"
+  version = "3.0.0"
+  from_port = var.from_port
+  to_port = var.to_port
 }
 
 module "compute" {
   source = "../modules/compute"
   server_port = var.server_port
-  green_security_group_name_instance = module.security.green_security_group_name
+  green_security_group_name_instance = module.security.security_group_name
 }
