@@ -1,5 +1,5 @@
 resource "aws_security_group" "mysg" {
-  name = "yellow-sec-group"
+  name = "yellow-sec-group.${random_id.myrandom.hex}"
   description = "Yellow team security group"
   ingress {
     from_port = var.from_port

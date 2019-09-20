@@ -8,7 +8,7 @@ module "web_server" {
 }
 
 module "security" {
-  source = "../modules/security"
+  source = "git::https://github.com/mhristof/security.git"
   from_port = var.server_port
   to_port = var.server_port
 }
