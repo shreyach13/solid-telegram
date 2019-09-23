@@ -41,6 +41,11 @@
   args:
     executable: /bin/bash
 
+- name: Start Jenkins at boot
+  systemd:
+    name: jenkins
+    enabled: true
+
 - debug:
     var: shouldnotbeprinted.stdout
 

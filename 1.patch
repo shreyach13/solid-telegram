@@ -1,750 +1,66 @@
-diff --git a/packer/readme.md b/packer/readme.md
-new file mode 100644
-index 0000000..d908932
+diff --git a/terraform/eddy/.terraform/plugins/darwin_amd64/lock.json b/terraform/eddy/.terraform/plugins/darwin_amd64/lock.json
+new file mode 100755
+index 0000000..15bd3f4
 --- /dev/null
-+++ b/packer/readme.md
-@@ -0,0 +1 @@
-+copy over the roles folder into packer/shreyach13, then create an ansible.cfg file in packer folder and write :  [defaults] /n roles_path = ./roles. add extra arguments to make it sudo. Then it will run.
-diff --git a/terraform/shreyach13/main.tf b/terraform/shreyach13/main.tf
++++ b/terraform/eddy/.terraform/plugins/darwin_amd64/lock.json
+@@ -0,0 +1,3 @@
++{
++  "aws": "e5b5ac23bd68b3ea4e02d09e6174dc22f3882ced7d0dd5ad002e4a42d654a4af"
++}
+\ No newline at end of file
+diff --git a/terraform/eddy/.terraform/plugins/darwin_amd64/terraform-provider-aws_v2.28.1_x4 b/terraform/eddy/.terraform/plugins/darwin_amd64/terraform-provider-aws_v2.28.1_x4
+new file mode 100755
+index 0000000..9225075
+Binary files /dev/null and b/terraform/eddy/.terraform/plugins/darwin_amd64/terraform-provider-aws_v2.28.1_x4 differ
+diff --git a/terraform/eddy/main.tf b/terraform/eddy/main.tf
 new file mode 100644
-index 0000000..a6a2bb5
+index 0000000..7e4f9a9
 --- /dev/null
-+++ b/terraform/shreyach13/main.tf
-@@ -0,0 +1,13 @@
++++ b/terraform/eddy/main.tf
+@@ -0,0 +1,12 @@
++# Terraform script is being run sequentially
 +provider "aws" {
 +  region = "eu-central-1"
 +}
-+
-+#This is create a new bucket
-+resource "aws_s3_bucket" "shreyatfstate" {
-+ bucket = "shreyaspace-tfstore"
-+ region = "eu-central-1"
-+ tags = {
-+    Name  = "Shreya bucket"
++# Next we use a bucket
++resource "aws_s3_bucket" "s3-bucket" {
++  bucket = "s3-eddy-bucket"
++  region = "eu-central-1"
++  tags = {
 +    owner = var.owner
 +  }
 +}
-diff --git a/terraform/shreyach13/production.tfvars b/terraform/shreyach13/production.tfvars
+diff --git a/terraform/eddy/remote-state/app/backend.hcl b/terraform/eddy/remote-state/app/backend.hcl
 new file mode 100644
-index 0000000..e07c5c5
+index 0000000..92ac138
 --- /dev/null
-+++ b/terraform/shreyach13/production.tfvars
-@@ -0,0 +1 @@
-+owner = "I am overwrite variable.tf Owner"
-diff --git a/terraform/shreyach13/terraform.tfstate b/terraform/shreyach13/terraform.tfstate
-new file mode 100644
-index 0000000..363bd21
---- /dev/null
-+++ b/terraform/shreyach13/terraform.tfstate
-@@ -0,0 +1,331 @@
-+{
-+  "version": 4,
-+  "terraform_version": "0.12.9",
-+  "serial": 17,
-+  "lineage": "37933da2-09f3-c391-ce85-b57d0901dacc",
-+  "outputs": {
-+    "print_shreya_webserver": {
-+      "value": {
-+        "ami": "ami-00aa4671cbf840d82",
-+        "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-02819c8496758a607",
-+        "associate_public_ip_address": true,
-+        "availability_zone": "eu-central-1b",
-+        "cpu_core_count": 1,
-+        "cpu_threads_per_core": 1,
-+        "credit_specification": [
-+          {
-+            "cpu_credits": "standard"
-+          }
-+        ],
-+        "disable_api_termination": false,
-+        "ebs_block_device": [],
-+        "ebs_optimized": false,
-+        "ephemeral_block_device": [],
-+        "get_password_data": false,
-+        "host_id": null,
-+        "iam_instance_profile": "",
-+        "id": "i-02819c8496758a607",
-+        "instance_initiated_shutdown_behavior": null,
-+        "instance_state": "running",
-+        "instance_type": "t2.micro",
-+        "ipv6_address_count": 0,
-+        "ipv6_addresses": [],
-+        "key_name": "",
-+        "monitoring": false,
-+        "network_interface": [],
-+        "network_interface_id": null,
-+        "password_data": "",
-+        "placement_group": "",
-+        "primary_network_interface_id": "eni-049aeb7aea7b8e2af",
-+        "private_dns": "ip-172-31-42-116.eu-central-1.compute.internal",
-+        "private_ip": "172.31.42.116",
-+        "public_dns": "ec2-18-185-127-109.eu-central-1.compute.amazonaws.com",
-+        "public_ip": "18.185.127.109",
-+        "root_block_device": [
-+          {
-+            "delete_on_termination": true,
-+            "encrypted": false,
-+            "iops": 100,
-+            "kms_key_id": "",
-+            "volume_id": "vol-072498c51d755da1c",
-+            "volume_size": 8,
-+            "volume_type": "gp2"
-+          }
-+        ],
-+        "security_groups": [
-+          "default"
-+        ],
-+        "source_dest_check": true,
-+        "subnet_id": "subnet-03e6e87e",
-+        "tags": {
-+          "Name": "ShreyaSpace",
-+          "owner": "shreya"
-+        },
-+        "tenancy": "default",
-+        "timeouts": null,
-+        "user_data": null,
-+        "user_data_base64": null,
-+        "volume_tags": {},
-+        "vpc_security_group_ids": [
-+          "sg-395d185a"
-+        ]
-+      },
-+      "type": [
-+        "object",
-+        {
-+          "ami": "string",
-+          "arn": "string",
-+          "associate_public_ip_address": "bool",
-+          "availability_zone": "string",
-+          "cpu_core_count": "number",
-+          "cpu_threads_per_core": "number",
-+          "credit_specification": [
-+            "list",
-+            [
-+              "object",
-+              {
-+                "cpu_credits": "string"
-+              }
-+            ]
-+          ],
-+          "disable_api_termination": "bool",
-+          "ebs_block_device": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "device_name": "string",
-+                "encrypted": "bool",
-+                "iops": "number",
-+                "kms_key_id": "string",
-+                "snapshot_id": "string",
-+                "volume_id": "string",
-+                "volume_size": "number",
-+                "volume_type": "string"
-+              }
-+            ]
-+          ],
-+          "ebs_optimized": "bool",
-+          "ephemeral_block_device": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "device_name": "string",
-+                "no_device": "bool",
-+                "virtual_name": "string"
-+              }
-+            ]
-+          ],
-+          "get_password_data": "bool",
-+          "host_id": "string",
-+          "iam_instance_profile": "string",
-+          "id": "string",
-+          "instance_initiated_shutdown_behavior": "string",
-+          "instance_state": "string",
-+          "instance_type": "string",
-+          "ipv6_address_count": "number",
-+          "ipv6_addresses": [
-+            "list",
-+            "string"
-+          ],
-+          "key_name": "string",
-+          "monitoring": "bool",
-+          "network_interface": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "device_index": "number",
-+                "network_interface_id": "string"
-+              }
-+            ]
-+          ],
-+          "network_interface_id": "string",
-+          "password_data": "string",
-+          "placement_group": "string",
-+          "primary_network_interface_id": "string",
-+          "private_dns": "string",
-+          "private_ip": "string",
-+          "public_dns": "string",
-+          "public_ip": "string",
-+          "root_block_device": [
-+            "list",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "encrypted": "bool",
-+                "iops": "number",
-+                "kms_key_id": "string",
-+                "volume_id": "string",
-+                "volume_size": "number",
-+                "volume_type": "string"
-+              }
-+            ]
-+          ],
-+          "security_groups": [
-+            "set",
-+            "string"
-+          ],
-+          "source_dest_check": "bool",
-+          "subnet_id": "string",
-+          "tags": [
-+            "map",
-+            "string"
-+          ],
-+          "tenancy": "string",
-+          "timeouts": [
-+            "object",
-+            {
-+              "create": "string",
-+              "delete": "string",
-+              "update": "string"
-+            }
-+          ],
-+          "user_data": "string",
-+          "user_data_base64": "string",
-+          "volume_tags": [
-+            "map",
-+            "string"
-+          ],
-+          "vpc_security_group_ids": [
-+            "set",
-+            "string"
-+          ]
-+        }
-+      ]
-+    },
-+    "public_ip": {
-+      "value": "18.185.127.109",
-+      "type": "string"
-+    }
-+  },
-+  "resources": [
-+    {
-+      "mode": "managed",
-+      "type": "aws_instance",
-+      "name": "shreya_webserver",
-+      "provider": "provider.aws",
-+      "instances": [
-+        {
-+          "schema_version": 1,
-+          "attributes": {
-+            "ami": "ami-00aa4671cbf840d82",
-+            "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-02819c8496758a607",
-+            "associate_public_ip_address": true,
-+            "availability_zone": "eu-central-1b",
-+            "cpu_core_count": 1,
-+            "cpu_threads_per_core": 1,
-+            "credit_specification": [
-+              {
-+                "cpu_credits": "standard"
-+              }
-+            ],
-+            "disable_api_termination": false,
-+            "ebs_block_device": [],
-+            "ebs_optimized": false,
-+            "ephemeral_block_device": [],
-+            "get_password_data": false,
-+            "host_id": null,
-+            "iam_instance_profile": "",
-+            "id": "i-02819c8496758a607",
-+            "instance_initiated_shutdown_behavior": null,
-+            "instance_state": "running",
-+            "instance_type": "t2.micro",
-+            "ipv6_address_count": 0,
-+            "ipv6_addresses": [],
-+            "key_name": "",
-+            "monitoring": false,
-+            "network_interface": [],
-+            "network_interface_id": null,
-+            "password_data": "",
-+            "placement_group": "",
-+            "primary_network_interface_id": "eni-049aeb7aea7b8e2af",
-+            "private_dns": "ip-172-31-42-116.eu-central-1.compute.internal",
-+            "private_ip": "172.31.42.116",
-+            "public_dns": "ec2-18-185-127-109.eu-central-1.compute.amazonaws.com",
-+            "public_ip": "18.185.127.109",
-+            "root_block_device": [
-+              {
-+                "delete_on_termination": true,
-+                "encrypted": false,
-+                "iops": 100,
-+                "kms_key_id": "",
-+                "volume_id": "vol-072498c51d755da1c",
-+                "volume_size": 8,
-+                "volume_type": "gp2"
-+              }
-+            ],
-+            "security_groups": [
-+              "default"
-+            ],
-+            "source_dest_check": true,
-+            "subnet_id": "subnet-03e6e87e",
-+            "tags": {
-+              "Name": "ShreyaSpace",
-+              "owner": "shreya"
-+            },
-+            "tenancy": "default",
-+            "timeouts": null,
-+            "user_data": null,
-+            "user_data_base64": null,
-+            "volume_tags": {},
-+            "vpc_security_group_ids": [
-+              "sg-395d185a"
-+            ]
-+          },
-+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
-+        }
-+      ]
-+    },
-+    {
-+      "mode": "managed",
-+      "type": "aws_s3_bucket",
-+      "name": "shreyatfstate",
-+      "provider": "provider.aws",
-+      "instances": [
-+        {
-+          "schema_version": 0,
-+          "attributes": {
-+            "acceleration_status": "",
-+            "acl": "private",
-+            "arn": "arn:aws:s3:::shreyaspace-tfstore",
-+            "bucket": "shreyaspace-tfstore",
-+            "bucket_domain_name": "shreyaspace-tfstore.s3.amazonaws.com",
-+            "bucket_prefix": null,
-+            "bucket_regional_domain_name": "shreyaspace-tfstore.s3.eu-central-1.amazonaws.com",
-+            "cors_rule": [],
-+            "force_destroy": false,
-+            "hosted_zone_id": "Z21DNDUVLTQW6Q",
-+            "id": "shreyaspace-tfstore",
-+            "lifecycle_rule": [],
-+            "logging": [],
-+            "object_lock_configuration": [],
-+            "policy": null,
-+            "region": "eu-central-1",
-+            "replication_configuration": [],
-+            "request_payer": "BucketOwner",
-+            "server_side_encryption_configuration": [],
-+            "tags": {
-+              "Name": "Shreya bucket",
-+              "owner": "shreya"
-+            },
-+            "versioning": [
-+              {
-+                "enabled": false,
-+                "mfa_delete": false
-+              }
-+            ],
-+            "website": [],
-+            "website_domain": null,
-+            "website_endpoint": null
-+          },
-+          "private": "bnVsbA=="
-+        }
-+      ]
-+    }
-+  ]
-+}
-diff --git a/terraform/shreyach13/terraform.tfstate.backup b/terraform/shreyach13/terraform.tfstate.backup
-new file mode 100644
-index 0000000..063a6e9
---- /dev/null
-+++ b/terraform/shreyach13/terraform.tfstate.backup
-@@ -0,0 +1,331 @@
-+{
-+  "version": 4,
-+  "terraform_version": "0.12.9",
-+  "serial": 16,
-+  "lineage": "37933da2-09f3-c391-ce85-b57d0901dacc",
-+  "outputs": {
-+    "public_ip": {
-+      "value": "18.185.127.109",
-+      "type": "string"
-+    },
-+    "shreya_webserver": {
-+      "value": {
-+        "ami": "ami-00aa4671cbf840d82",
-+        "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-02819c8496758a607",
-+        "associate_public_ip_address": true,
-+        "availability_zone": "eu-central-1b",
-+        "cpu_core_count": 1,
-+        "cpu_threads_per_core": 1,
-+        "credit_specification": [
-+          {
-+            "cpu_credits": "standard"
-+          }
-+        ],
-+        "disable_api_termination": false,
-+        "ebs_block_device": [],
-+        "ebs_optimized": false,
-+        "ephemeral_block_device": [],
-+        "get_password_data": false,
-+        "host_id": null,
-+        "iam_instance_profile": "",
-+        "id": "i-02819c8496758a607",
-+        "instance_initiated_shutdown_behavior": null,
-+        "instance_state": "running",
-+        "instance_type": "t2.micro",
-+        "ipv6_address_count": 0,
-+        "ipv6_addresses": [],
-+        "key_name": "",
-+        "monitoring": false,
-+        "network_interface": [],
-+        "network_interface_id": null,
-+        "password_data": "",
-+        "placement_group": "",
-+        "primary_network_interface_id": "eni-049aeb7aea7b8e2af",
-+        "private_dns": "ip-172-31-42-116.eu-central-1.compute.internal",
-+        "private_ip": "172.31.42.116",
-+        "public_dns": "ec2-18-185-127-109.eu-central-1.compute.amazonaws.com",
-+        "public_ip": "18.185.127.109",
-+        "root_block_device": [
-+          {
-+            "delete_on_termination": true,
-+            "encrypted": false,
-+            "iops": 100,
-+            "kms_key_id": "",
-+            "volume_id": "vol-072498c51d755da1c",
-+            "volume_size": 8,
-+            "volume_type": "gp2"
-+          }
-+        ],
-+        "security_groups": [
-+          "default"
-+        ],
-+        "source_dest_check": true,
-+        "subnet_id": "subnet-03e6e87e",
-+        "tags": {
-+          "Name": "ShreyaSpace",
-+          "owner": "shreya"
-+        },
-+        "tenancy": "default",
-+        "timeouts": null,
-+        "user_data": null,
-+        "user_data_base64": null,
-+        "volume_tags": {},
-+        "vpc_security_group_ids": [
-+          "sg-395d185a"
-+        ]
-+      },
-+      "type": [
-+        "object",
-+        {
-+          "ami": "string",
-+          "arn": "string",
-+          "associate_public_ip_address": "bool",
-+          "availability_zone": "string",
-+          "cpu_core_count": "number",
-+          "cpu_threads_per_core": "number",
-+          "credit_specification": [
-+            "list",
-+            [
-+              "object",
-+              {
-+                "cpu_credits": "string"
-+              }
-+            ]
-+          ],
-+          "disable_api_termination": "bool",
-+          "ebs_block_device": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "device_name": "string",
-+                "encrypted": "bool",
-+                "iops": "number",
-+                "kms_key_id": "string",
-+                "snapshot_id": "string",
-+                "volume_id": "string",
-+                "volume_size": "number",
-+                "volume_type": "string"
-+              }
-+            ]
-+          ],
-+          "ebs_optimized": "bool",
-+          "ephemeral_block_device": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "device_name": "string",
-+                "no_device": "bool",
-+                "virtual_name": "string"
-+              }
-+            ]
-+          ],
-+          "get_password_data": "bool",
-+          "host_id": "string",
-+          "iam_instance_profile": "string",
-+          "id": "string",
-+          "instance_initiated_shutdown_behavior": "string",
-+          "instance_state": "string",
-+          "instance_type": "string",
-+          "ipv6_address_count": "number",
-+          "ipv6_addresses": [
-+            "list",
-+            "string"
-+          ],
-+          "key_name": "string",
-+          "monitoring": "bool",
-+          "network_interface": [
-+            "set",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "device_index": "number",
-+                "network_interface_id": "string"
-+              }
-+            ]
-+          ],
-+          "network_interface_id": "string",
-+          "password_data": "string",
-+          "placement_group": "string",
-+          "primary_network_interface_id": "string",
-+          "private_dns": "string",
-+          "private_ip": "string",
-+          "public_dns": "string",
-+          "public_ip": "string",
-+          "root_block_device": [
-+            "list",
-+            [
-+              "object",
-+              {
-+                "delete_on_termination": "bool",
-+                "encrypted": "bool",
-+                "iops": "number",
-+                "kms_key_id": "string",
-+                "volume_id": "string",
-+                "volume_size": "number",
-+                "volume_type": "string"
-+              }
-+            ]
-+          ],
-+          "security_groups": [
-+            "set",
-+            "string"
-+          ],
-+          "source_dest_check": "bool",
-+          "subnet_id": "string",
-+          "tags": [
-+            "map",
-+            "string"
-+          ],
-+          "tenancy": "string",
-+          "timeouts": [
-+            "object",
-+            {
-+              "create": "string",
-+              "delete": "string",
-+              "update": "string"
-+            }
-+          ],
-+          "user_data": "string",
-+          "user_data_base64": "string",
-+          "volume_tags": [
-+            "map",
-+            "string"
-+          ],
-+          "vpc_security_group_ids": [
-+            "set",
-+            "string"
-+          ]
-+        }
-+      ]
-+    }
-+  },
-+  "resources": [
-+    {
-+      "mode": "managed",
-+      "type": "aws_instance",
-+      "name": "shreya_webserver",
-+      "provider": "provider.aws",
-+      "instances": [
-+        {
-+          "schema_version": 1,
-+          "attributes": {
-+            "ami": "ami-00aa4671cbf840d82",
-+            "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-02819c8496758a607",
-+            "associate_public_ip_address": true,
-+            "availability_zone": "eu-central-1b",
-+            "cpu_core_count": 1,
-+            "cpu_threads_per_core": 1,
-+            "credit_specification": [
-+              {
-+                "cpu_credits": "standard"
-+              }
-+            ],
-+            "disable_api_termination": false,
-+            "ebs_block_device": [],
-+            "ebs_optimized": false,
-+            "ephemeral_block_device": [],
-+            "get_password_data": false,
-+            "host_id": null,
-+            "iam_instance_profile": "",
-+            "id": "i-02819c8496758a607",
-+            "instance_initiated_shutdown_behavior": null,
-+            "instance_state": "running",
-+            "instance_type": "t2.micro",
-+            "ipv6_address_count": 0,
-+            "ipv6_addresses": [],
-+            "key_name": "",
-+            "monitoring": false,
-+            "network_interface": [],
-+            "network_interface_id": null,
-+            "password_data": "",
-+            "placement_group": "",
-+            "primary_network_interface_id": "eni-049aeb7aea7b8e2af",
-+            "private_dns": "ip-172-31-42-116.eu-central-1.compute.internal",
-+            "private_ip": "172.31.42.116",
-+            "public_dns": "ec2-18-185-127-109.eu-central-1.compute.amazonaws.com",
-+            "public_ip": "18.185.127.109",
-+            "root_block_device": [
-+              {
-+                "delete_on_termination": true,
-+                "encrypted": false,
-+                "iops": 100,
-+                "kms_key_id": "",
-+                "volume_id": "vol-072498c51d755da1c",
-+                "volume_size": 8,
-+                "volume_type": "gp2"
-+              }
-+            ],
-+            "security_groups": [
-+              "default"
-+            ],
-+            "source_dest_check": true,
-+            "subnet_id": "subnet-03e6e87e",
-+            "tags": {
-+              "Name": "ShreyaSpace",
-+              "owner": "shreya"
-+            },
-+            "tenancy": "default",
-+            "timeouts": null,
-+            "user_data": null,
-+            "user_data_base64": null,
-+            "volume_tags": {},
-+            "vpc_security_group_ids": [
-+              "sg-395d185a"
-+            ]
-+          },
-+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
-+        }
-+      ]
-+    },
-+    {
-+      "mode": "managed",
-+      "type": "aws_s3_bucket",
-+      "name": "shreyatfstate",
-+      "provider": "provider.aws",
-+      "instances": [
-+        {
-+          "schema_version": 0,
-+          "attributes": {
-+            "acceleration_status": "",
-+            "acl": "private",
-+            "arn": "arn:aws:s3:::shreyaspace-tfstore",
-+            "bucket": "shreyaspace-tfstore",
-+            "bucket_domain_name": "shreyaspace-tfstore.s3.amazonaws.com",
-+            "bucket_prefix": null,
-+            "bucket_regional_domain_name": "shreyaspace-tfstore.s3.eu-central-1.amazonaws.com",
-+            "cors_rule": [],
-+            "force_destroy": false,
-+            "hosted_zone_id": "Z21DNDUVLTQW6Q",
-+            "id": "shreyaspace-tfstore",
-+            "lifecycle_rule": [],
-+            "logging": [],
-+            "object_lock_configuration": [],
-+            "policy": null,
-+            "region": "eu-central-1",
-+            "replication_configuration": [],
-+            "request_payer": "BucketOwner",
-+            "server_side_encryption_configuration": [],
-+            "tags": {
-+              "Name": "Shreya bucket",
-+              "owner": "shreya"
-+            },
-+            "versioning": [
-+              {
-+                "enabled": false,
-+                "mfa_delete": false
-+              }
-+            ],
-+            "website": [],
-+            "website_domain": null,
-+            "website_endpoint": null
-+          },
-+          "private": "bnVsbA=="
-+        }
-+      ]
-+    }
-+  ]
-+}
-diff --git a/terraform/shreyach13/variable.tf b/terraform/shreyach13/variable.tf
-new file mode 100644
-index 0000000..df4cbc6
---- /dev/null
-+++ b/terraform/shreyach13/variable.tf
++++ b/terraform/eddy/remote-state/app/backend.hcl
 @@ -0,0 +1,3 @@
-+variable "owner" {
-+  default = "shreya"
-+}
-diff --git a/terraform/shreyach13/with-remote-state/app/backend.hcl b/terraform/shreyach13/with-remote-state/app/backend.hcl
-new file mode 100644
-index 0000000..9896b80
---- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/app/backend.hcl
-@@ -0,0 +1,3 @@
-+bucket = "shreyaspace-tfstore"
++bucket = "s3-eddy-bucket"
 +region = "eu-central-1"
 +encrypt = true
-diff --git a/terraform/shreyach13/with-remote-state/app/backend.tf b/terraform/shreyach13/with-remote-state/app/backend.tf
+diff --git a/terraform/eddy/remote-state/app/backend.tf b/terraform/eddy/remote-state/app/backend.tf
 new file mode 100644
 index 0000000..cdba228
 --- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/app/backend.tf
++++ b/terraform/eddy/remote-state/app/backend.tf
 @@ -0,0 +1,5 @@
 +terraform {
 +  backend "s3" {
 +    key = "core/terraform.tfstate"
 +  }
 +}
-diff --git a/terraform/shreyach13/with-remote-state/app/main.tf b/terraform/shreyach13/with-remote-state/app/main.tf
+diff --git a/terraform/eddy/remote-state/app/main.tf b/terraform/eddy/remote-state/app/main.tf
 new file mode 100644
-index 0000000..62939c2
+index 0000000..0da6e4a
 --- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/app/main.tf
++++ b/terraform/eddy/remote-state/app/main.tf
 @@ -0,0 +1,14 @@
 +provider "aws" {
 +  region = "eu-central-1"
 +}
 +
-+module "shreya_web_server" {
++module "web_server" {
 +  source = "../modules/compute"
 +  server_port = var.server_port
 +}
@@ -752,95 +68,501 @@ index 0000000..62939c2
 +module "security" {
 +  source = "../modules/security"
 +  from_port = var.server_port
-+  to_port = var.server_port
++  to_port   = var.server_port
 +}
-diff --git a/terraform/shreyach13/with-remote-state/app/tf.plan b/terraform/shreyach13/with-remote-state/app/tf.plan
+diff --git a/terraform/eddy/remote-state/app/tf.plan_eddy b/terraform/eddy/remote-state/app/tf.plan_eddy
 new file mode 100644
-index 0000000..c7dd358
-Binary files /dev/null and b/terraform/shreyach13/with-remote-state/app/tf.plan differ
-diff --git a/terraform/shreyach13/with-remote-state/app/variable.tf b/terraform/shreyach13/with-remote-state/app/variable.tf
+index 0000000..8d27809
+Binary files /dev/null and b/terraform/eddy/remote-state/app/tf.plan_eddy differ
+diff --git a/terraform/eddy/remote-state/app/variables.tf b/terraform/eddy/remote-state/app/variables.tf
 new file mode 100644
-index 0000000..73bf34f
+index 0000000..47a3dd3
 --- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/app/variable.tf
++++ b/terraform/eddy/remote-state/app/variables.tf
 @@ -0,0 +1,4 @@
 +variable "server_port" {
-+  description = "This port will be used for http requests"
-+  default = "8080"
++  description = "The port the server will use for HTTP request"
++  default = "8090"
 +}
-diff --git a/terraform/shreyach13/with-remote-state/modules/compute/main.tf b/terraform/shreyach13/with-remote-state/modules/compute/main.tf
+diff --git a/terraform/eddy/terraform.tfstate b/terraform/eddy/terraform.tfstate
 new file mode 100644
-index 0000000..c347c0a
+index 0000000..a604162
 --- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/modules/compute/main.tf
-@@ -0,0 +1,18 @@
-+provider "aws" {
-+  region = "eu-central-1"
++++ b/terraform/eddy/terraform.tfstate
+@@ -0,0 +1,330 @@
++{
++  "version": 4,
++  "terraform_version": "0.12.9",
++  "serial": 9,
++  "lineage": "b75f6b70-f608-78b1-3ac2-0dcc7f5cd5c6",
++  "outputs": {
++    "print_webserver": {
++      "value": {
++        "ami": "ami-0cdab515472ca0bac",
++        "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-00abd4b97610db218",
++        "associate_public_ip_address": true,
++        "availability_zone": "eu-central-1b",
++        "cpu_core_count": 1,
++        "cpu_threads_per_core": 1,
++        "credit_specification": [
++          {
++            "cpu_credits": "standard"
++          }
++        ],
++        "disable_api_termination": false,
++        "ebs_block_device": [],
++        "ebs_optimized": false,
++        "ephemeral_block_device": [],
++        "get_password_data": false,
++        "host_id": null,
++        "iam_instance_profile": "",
++        "id": "i-00abd4b97610db218",
++        "instance_initiated_shutdown_behavior": null,
++        "instance_state": "running",
++        "instance_type": "t2.micro",
++        "ipv6_address_count": 0,
++        "ipv6_addresses": [],
++        "key_name": "",
++        "monitoring": false,
++        "network_interface": [],
++        "network_interface_id": null,
++        "password_data": "",
++        "placement_group": "",
++        "primary_network_interface_id": "eni-0b932962f2fbb9812",
++        "private_dns": "ip-172-31-47-166.eu-central-1.compute.internal",
++        "private_ip": "172.31.47.166",
++        "public_dns": "ec2-18-184-232-139.eu-central-1.compute.amazonaws.com",
++        "public_ip": "18.184.232.139",
++        "root_block_device": [
++          {
++            "delete_on_termination": true,
++            "encrypted": false,
++            "iops": 100,
++            "kms_key_id": "",
++            "volume_id": "vol-09f80e15303adbf41",
++            "volume_size": 8,
++            "volume_type": "gp2"
++          }
++        ],
++        "security_groups": [
++          "default"
++        ],
++        "source_dest_check": true,
++        "subnet_id": "subnet-03e6e87e",
++        "tags": {
++          "Name": "Eddy's Webserver",
++          "owner": "eddy"
++        },
++        "tenancy": "default",
++        "timeouts": null,
++        "user_data": null,
++        "user_data_base64": null,
++        "volume_tags": {},
++        "vpc_security_group_ids": [
++          "sg-395d185a"
++        ]
++      },
++      "type": [
++        "object",
++        {
++          "ami": "string",
++          "arn": "string",
++          "associate_public_ip_address": "bool",
++          "availability_zone": "string",
++          "cpu_core_count": "number",
++          "cpu_threads_per_core": "number",
++          "credit_specification": [
++            "list",
++            [
++              "object",
++              {
++                "cpu_credits": "string"
++              }
++            ]
++          ],
++          "disable_api_termination": "bool",
++          "ebs_block_device": [
++            "set",
++            [
++              "object",
++              {
++                "delete_on_termination": "bool",
++                "device_name": "string",
++                "encrypted": "bool",
++                "iops": "number",
++                "kms_key_id": "string",
++                "snapshot_id": "string",
++                "volume_id": "string",
++                "volume_size": "number",
++                "volume_type": "string"
++              }
++            ]
++          ],
++          "ebs_optimized": "bool",
++          "ephemeral_block_device": [
++            "set",
++            [
++              "object",
++              {
++                "device_name": "string",
++                "no_device": "bool",
++                "virtual_name": "string"
++              }
++            ]
++          ],
++          "get_password_data": "bool",
++          "host_id": "string",
++          "iam_instance_profile": "string",
++          "id": "string",
++          "instance_initiated_shutdown_behavior": "string",
++          "instance_state": "string",
++          "instance_type": "string",
++          "ipv6_address_count": "number",
++          "ipv6_addresses": [
++            "list",
++            "string"
++          ],
++          "key_name": "string",
++          "monitoring": "bool",
++          "network_interface": [
++            "set",
++            [
++              "object",
++              {
++                "delete_on_termination": "bool",
++                "device_index": "number",
++                "network_interface_id": "string"
++              }
++            ]
++          ],
++          "network_interface_id": "string",
++          "password_data": "string",
++          "placement_group": "string",
++          "primary_network_interface_id": "string",
++          "private_dns": "string",
++          "private_ip": "string",
++          "public_dns": "string",
++          "public_ip": "string",
++          "root_block_device": [
++            "list",
++            [
++              "object",
++              {
++                "delete_on_termination": "bool",
++                "encrypted": "bool",
++                "iops": "number",
++                "kms_key_id": "string",
++                "volume_id": "string",
++                "volume_size": "number",
++                "volume_type": "string"
++              }
++            ]
++          ],
++          "security_groups": [
++            "set",
++            "string"
++          ],
++          "source_dest_check": "bool",
++          "subnet_id": "string",
++          "tags": [
++            "map",
++            "string"
++          ],
++          "tenancy": "string",
++          "timeouts": [
++            "object",
++            {
++              "create": "string",
++              "delete": "string",
++              "update": "string"
++            }
++          ],
++          "user_data": "string",
++          "user_data_base64": "string",
++          "volume_tags": [
++            "map",
++            "string"
++          ],
++          "vpc_security_group_ids": [
++            "set",
++            "string"
++          ]
++        }
++      ]
++    },
++    "public_ip_webserver": {
++      "value": "18.184.232.139",
++      "type": "string"
++    }
++  },
++  "resources": [
++    {
++      "mode": "managed",
++      "type": "aws_instance",
++      "name": "webserver",
++      "provider": "provider.aws",
++      "instances": [
++        {
++          "schema_version": 1,
++          "attributes": {
++            "ami": "ami-0cdab515472ca0bac",
++            "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-00abd4b97610db218",
++            "associate_public_ip_address": true,
++            "availability_zone": "eu-central-1b",
++            "cpu_core_count": 1,
++            "cpu_threads_per_core": 1,
++            "credit_specification": [
++              {
++                "cpu_credits": "standard"
++              }
++            ],
++            "disable_api_termination": false,
++            "ebs_block_device": [],
++            "ebs_optimized": false,
++            "ephemeral_block_device": [],
++            "get_password_data": false,
++            "host_id": null,
++            "iam_instance_profile": "",
++            "id": "i-00abd4b97610db218",
++            "instance_initiated_shutdown_behavior": null,
++            "instance_state": "running",
++            "instance_type": "t2.micro",
++            "ipv6_address_count": 0,
++            "ipv6_addresses": [],
++            "key_name": "",
++            "monitoring": false,
++            "network_interface": [],
++            "network_interface_id": null,
++            "password_data": "",
++            "placement_group": "",
++            "primary_network_interface_id": "eni-0b932962f2fbb9812",
++            "private_dns": "ip-172-31-47-166.eu-central-1.compute.internal",
++            "private_ip": "172.31.47.166",
++            "public_dns": "ec2-18-184-232-139.eu-central-1.compute.amazonaws.com",
++            "public_ip": "18.184.232.139",
++            "root_block_device": [
++              {
++                "delete_on_termination": true,
++                "encrypted": false,
++                "iops": 100,
++                "kms_key_id": "",
++                "volume_id": "vol-09f80e15303adbf41",
++                "volume_size": 8,
++                "volume_type": "gp2"
++              }
++            ],
++            "security_groups": [
++              "default"
++            ],
++            "source_dest_check": true,
++            "subnet_id": "subnet-03e6e87e",
++            "tags": {
++              "Name": "Eddy's Webserver",
++              "owner": "eddy"
++            },
++            "tenancy": "default",
++            "timeouts": null,
++            "user_data": null,
++            "user_data_base64": null,
++            "volume_tags": {},
++            "vpc_security_group_ids": [
++              "sg-395d185a"
++            ]
++          },
++          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
++        }
++      ]
++    },
++    {
++      "mode": "managed",
++      "type": "aws_s3_bucket",
++      "name": "s3-bucket",
++      "provider": "provider.aws",
++      "instances": [
++        {
++          "schema_version": 0,
++          "attributes": {
++            "acceleration_status": "",
++            "acl": "private",
++            "arn": "arn:aws:s3:::s3-eddy-bucket",
++            "bucket": "s3-eddy-bucket",
++            "bucket_domain_name": "s3-eddy-bucket.s3.amazonaws.com",
++            "bucket_prefix": null,
++            "bucket_regional_domain_name": "s3-eddy-bucket.s3.eu-central-1.amazonaws.com",
++            "cors_rule": [],
++            "force_destroy": false,
++            "hosted_zone_id": "Z21DNDUVLTQW6Q",
++            "id": "s3-eddy-bucket",
++            "lifecycle_rule": [],
++            "logging": [],
++            "object_lock_configuration": [],
++            "policy": null,
++            "region": "eu-central-1",
++            "replication_configuration": [],
++            "request_payer": "BucketOwner",
++            "server_side_encryption_configuration": [],
++            "tags": {
++              "owner": "eddy"
++            },
++            "versioning": [
++              {
++                "enabled": false,
++                "mfa_delete": false
++              }
++            ],
++            "website": [],
++            "website_domain": null,
++            "website_endpoint": null
++          },
++          "private": "bnVsbA=="
++        }
++      ]
++    }
++  ]
 +}
-+
-+# A basic vm example to show how to provision a vm
-+resource "aws_instance" "shreya_webserver"{
-+  ami = "ami-00aa4671cbf840d82"
-+  instance_type = "t2.micro"
-+  user_data = <<-EOF
-+            #!/bin/bash
-+            echo "Hello, World" >index.html
-+            nohup busybox httpd -f -p "${var.server_port}" &
-+            EOF
-+  #This will change the name of the instance
-+  tags = {
-+    Name = "ShreyaSpace"
-+  }
-+}
-diff --git a/terraform/shreyach13/with-remote-state/modules/compute/output.tf b/terraform/shreyach13/with-remote-state/modules/compute/output.tf
+diff --git a/terraform/eddy/terraform.tfstate.backup b/terraform/eddy/terraform.tfstate.backup
 new file mode 100644
-index 0000000..f638f79
+index 0000000..fc36d7c
 --- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/modules/compute/output.tf
-@@ -0,0 +1,4 @@
-+output "public_ip" {
-+  description="the public ip of the server"
-+  value=aws_instance.shreya_webserver.public_ip
-+}
-diff --git a/terraform/shreyach13/with-remote-state/modules/compute/variable.tf b/terraform/shreyach13/with-remote-state/modules/compute/variable.tf
-new file mode 100644
-index 0000000..73bf34f
---- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/modules/compute/variable.tf
-@@ -0,0 +1,4 @@
-+variable "server_port" {
-+  description = "This port will be used for http requests"
-+  default = "8080"
-+}
-diff --git a/terraform/shreyach13/with-remote-state/modules/security/main.tf b/terraform/shreyach13/with-remote-state/modules/security/main.tf
-new file mode 100644
-index 0000000..51e2696
---- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/modules/security/main.tf
-@@ -0,0 +1,13 @@
-+resource "aws_security_group" "shsecurity"{
-+  name = "terraform-instance-${random_id.myrandom.hex}"
-+  ingress {
-+    from_port = var.from_port
-+    to_port = var.to_port
-+    protocol = "tcp"
-+    cidr_blocks = ["0.0.0.0/0"]
-+  }
-+}
-+
-+resource "random_id" "myrandom" {
-+  byte_length = 3
-+}
-diff --git a/terraform/shreyach13/with-remote-state/modules/security/variable.tf b/terraform/shreyach13/with-remote-state/modules/security/variable.tf
-new file mode 100644
-index 0000000..398d418
---- /dev/null
-+++ b/terraform/shreyach13/with-remote-state/modules/security/variable.tf
-@@ -0,0 +1,7 @@
-+variable "from_port" {
-+  default = "9000"
-+}
-+
-+variable "to_port" {
-+  default = "9000"
++++ b/terraform/eddy/terraform.tfstate.backup
+@@ -0,0 +1,140 @@
++{
++  "version": 4,
++  "terraform_version": "0.12.9",
++  "serial": 8,
++  "lineage": "b75f6b70-f608-78b1-3ac2-0dcc7f5cd5c6",
++  "outputs": {
++    "print_webserver": {
++      "value": "arn:aws:ec2:eu-central-1:426714351745:instance/i-00abd4b97610db218",
++      "type": "string"
++    },
++    "public_ip_webserver": {
++      "value": "18.184.232.139",
++      "type": "string"
++    }
++  },
++  "resources": [
++    {
++      "mode": "managed",
++      "type": "aws_instance",
++      "name": "webserver",
++      "provider": "provider.aws",
++      "instances": [
++        {
++          "schema_version": 1,
++          "attributes": {
++            "ami": "ami-0cdab515472ca0bac",
++            "arn": "arn:aws:ec2:eu-central-1:426714351745:instance/i-00abd4b97610db218",
++            "associate_public_ip_address": true,
++            "availability_zone": "eu-central-1b",
++            "cpu_core_count": 1,
++            "cpu_threads_per_core": 1,
++            "credit_specification": [
++              {
++                "cpu_credits": "standard"
++              }
++            ],
++            "disable_api_termination": false,
++            "ebs_block_device": [],
++            "ebs_optimized": false,
++            "ephemeral_block_device": [],
++            "get_password_data": false,
++            "host_id": null,
++            "iam_instance_profile": "",
++            "id": "i-00abd4b97610db218",
++            "instance_initiated_shutdown_behavior": null,
++            "instance_state": "running",
++            "instance_type": "t2.micro",
++            "ipv6_address_count": 0,
++            "ipv6_addresses": [],
++            "key_name": "",
++            "monitoring": false,
++            "network_interface": [],
++            "network_interface_id": null,
++            "password_data": "",
++            "placement_group": "",
++            "primary_network_interface_id": "eni-0b932962f2fbb9812",
++            "private_dns": "ip-172-31-47-166.eu-central-1.compute.internal",
++            "private_ip": "172.31.47.166",
++            "public_dns": "ec2-18-184-232-139.eu-central-1.compute.amazonaws.com",
++            "public_ip": "18.184.232.139",
++            "root_block_device": [
++              {
++                "delete_on_termination": true,
++                "encrypted": false,
++                "iops": 100,
++                "kms_key_id": "",
++                "volume_id": "vol-09f80e15303adbf41",
++                "volume_size": 8,
++                "volume_type": "gp2"
++              }
++            ],
++            "security_groups": [
++              "default"
++            ],
++            "source_dest_check": true,
++            "subnet_id": "subnet-03e6e87e",
++            "tags": {
++              "Name": "Eddy's Webserver",
++              "owner": "eddy"
++            },
++            "tenancy": "default",
++            "timeouts": null,
++            "user_data": null,
++            "user_data_base64": null,
++            "volume_tags": {},
++            "vpc_security_group_ids": [
++              "sg-395d185a"
++            ]
++          },
++          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
++        }
++      ]
++    },
++    {
++      "mode": "managed",
++      "type": "aws_s3_bucket",
++      "name": "s3-bucket",
++      "provider": "provider.aws",
++      "instances": [
++        {
++          "schema_version": 0,
++          "attributes": {
++            "acceleration_status": "",
++            "acl": "private",
++            "arn": "arn:aws:s3:::s3-eddy-bucket",
++            "bucket": "s3-eddy-bucket",
++            "bucket_domain_name": "s3-eddy-bucket.s3.amazonaws.com",
++            "bucket_prefix": null,
++            "bucket_regional_domain_name": "s3-eddy-bucket.s3.eu-central-1.amazonaws.com",
++            "cors_rule": [],
++            "force_destroy": false,
++            "hosted_zone_id": "Z21DNDUVLTQW6Q",
++            "id": "s3-eddy-bucket",
++            "lifecycle_rule": [],
++            "logging": [],
++            "object_lock_configuration": [],
++            "policy": null,
++            "region": "eu-central-1",
++            "replication_configuration": [],
++            "request_payer": "BucketOwner",
++            "server_side_encryption_configuration": [],
++            "tags": {
++              "owner": "eddy"
++            },
++            "versioning": [
++              {
++                "enabled": false,
++                "mfa_delete": false
++              }
++            ],
++            "website": [],
++            "website_domain": null,
++            "website_endpoint": null
++          },
++          "private": "bnVsbA=="
++        }
++      ]
++    }
++  ]
 +}
