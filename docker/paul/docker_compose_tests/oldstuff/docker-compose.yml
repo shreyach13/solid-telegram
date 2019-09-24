@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+#  pauls_app:
+#    depends_on:
+#      - my_mysql
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - '8088:8088'
+#    volumes:
+#      - /Users/paul.broughton/work_dir:/work_ro:ro
+#      - /Users/paul.broughton/work_dir:/work_rw
+
+  my_mysql:
+    hostname: mysql_server
+    image: mysql:5.7
+#    build:
+#      context: .
+#      dockerfile: Dockerfile-CopyScript
+    #command: /home/app/dbcreate
+    environment:
+#      MYSQL_DATABASE: "paulsdb"
+      MYSQL_ROOT_PASSWORD: abc123
+    volumes:
+      - new-mysql-vol:/var/lib/mysql
+
+#  my_mysql_provisioner:
+#    build:
+#      context: .
+#      dockerfile: dockerfile1
+#    command: /home/app/dbcreate
+
+volumes:
+  new-mysql-vol:
+    driver: local

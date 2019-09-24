@@ -4,7 +4,7 @@ require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('<h1>Hello Paul!! - v2</h1>');
+  res.send('<h1>Hello Paul!! - Eg4CopyScript</h1>');
 });
 
 app.listen(8088, () => {

@@ -1,0 +1,143 @@
+docker build .
+
+docker run -it b19eea2d2340
+
+# Tag an image
+docker build --tag my-nodejs:v1.0 .
+
+# List images
+docker images
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+my-nodejs             v1.0                0899da586e32        29 minutes ago      83.5MB
+<none>                <none>              c1cc2bbbeee4        17 hours ago        83.5MB
+<none>                <none>              b19eea2d2340        17 hours ago        83.5MB
+
+# Run a docker image
+docker run -it 0899da586e32
+
+# Look at history of an image
+docker history 0899da586e32
+
+
+DOCKER ECR (with AWS)
+0. Create a new REPOSITORY in AWS ecr
+
+1. Authenticate with AWS
+$(aws ecr get-login --no-include-email --region eu-central-1)
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+Login Succeeded
+
+# Tag the built image
+$ docker build -t my-image .
+
+# Tag the image to be uploaded (with paul in this case")
+$ docker tag my-image:latest 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
+
+$ docker push 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
+The push refers to repository [426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image]
+5b3380ec8065: Pushed
+72eba3c3296a: Pushed
+..
+..
+
+# Run the remotely tagged image
+$ docker run -it -p 8088:8088 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
+
+
+Environmental Variables
+
+# Pass a mysql password when running the container
+$ docker run -e "MYSQL_ROOT_PASSWORD=abc123" mysql:5.7
+
+# Use -d to background the process
+$ docker run -d -e "MYSQL_ROOT_PASSWORD=abc123" mysql:5.7
+
+# view docker logs
+$ docker logs
+
+# Connect to container (using assigned name)
+$ docker exec -it pensive_curran bash
+    # mysql -uroot -p
+$ docker exec -it pensive_curran bash -c "mysql -uroot -p"
+$ docker exec -it pensive_curran mysql -u root -p
+$ docker exec -it pensive_curran bash -c "mysql -uroot -p$(echo $MYSQL_ROOT_PASSWORD)"
+
+
+DOCKER RUNTIME
+
+Storage Options
+- Bind mounts
+    Takes a folder from the host and mounts in the container
+
+    $ docker run ... -v /user/sub-dir:/app ...
+
+- Volumes
+
+    $ docker run ... -v myvol:/app:ro ...   <- ro
+    $ docker run ... -v myvol:/app ...
+
+    # Create a volume manually - NOTE - better do this in docker-compose
+    $ docker volume create --label name=paul
+
+    $ docker volume create --label name=paul
+2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9
+
+    $ docker inspect 2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9
+[
+    {
+        "CreatedAt": "2019-09-24T11:05:49Z",
+        "Driver": "local",
+        "Labels": {
+            "name": "paul"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9/_data",
+        "Name": "2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+# Docker processes
+
+# Like top but for docker
+$ docker stats
+
+# View running containers
+$ docker ps [- a]
+
+
+Container Orchestration
+
+# Typically only use docker compose for relatively small solutions (up to 10)...
+# Ideally used for small, local testing
+$ docker compose
+
+- Docker swarm
+- Kubernetes
+- Hashicorp Nomad
+- Mesosphere
+
+# Create a docker-compose.yml
+version: '2'
+
+services:
+  my_app:
+    depends_on:                         <- Wait until my_mysql is up
+      - my_mysql
+    build:
+      context: .
+      dockerfile: Dockerfile
+  my_mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: abc123       (${FOOBAR}  )
+
+$ docker-compose build
+
+# Start a docker based solution
+$ docker-compose up -d
+
+$ docker-compose down
+
+# Will connect to a running container (instead of docker exec -it fffffff sh)
+$ docker-compose exec my_app sh
