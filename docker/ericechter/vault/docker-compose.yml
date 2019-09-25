@@ -25,6 +25,6 @@ services:
     container_name: vault_init_container
     environment:
       VAULT_ADDR: 'http://vault:8200'
-    command: sh /work/vault_init.sh
+    command: bash /work/vault_init.sh
 #volumes:
 #  vault_vol:
