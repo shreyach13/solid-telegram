@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+
+  vault:
+    container_name: vault_container
+    ports:
+      - '8200:8200'
+    #expose:
+    #  - '8200'
+    #volumes:
+    #  - mysql_vol:/var/lib/mysql
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  vault_init:
+    depends_on:
+      - vault
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /Users/eric.echter/github/solid-telegram/docker/ericechter/vault:/work:ro
+    container_name: vault_init_container
+    environment:
+      VAULT_ADDR: 'http://vault:8200'
+    command: sh /work/vault_init.sh
+#volumes:
+#  vault_vol:
