@@ -1,0 +1,31 @@
+version: '2.1'
+
+services:
+  vault_container_1:
+    container_name: vault_container_1
+    build:
+      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant/vault_container
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      vault_network:
+        ipv4_address: 172.30.0.3
+    hostname: vault_container1
+    ports:
+      - 8200:8200
+  vault_container_2:
+    container_name: vault_container_2
+    build:
+      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant/vault_container/vault_container2
+      dockerfile: Dockerfile
+    networks:
+      vault_network:
+        ipv4_address: 172.30.0.4
+
+networks:
+ vault_network:
+  driver: bridge
+  ipam:
+   config:
+    - subnet: 172.30.0.0/16
+      ip_range: 172.30.0.0/24
