@@ -2,8 +2,6 @@
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 set -euo pipefail
 
-date
-
 while ! nc -zvw3 mysql 3306; do
     echo "Waiting for database to accept connections"
     sleep 1;
