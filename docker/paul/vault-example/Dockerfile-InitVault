@@ -1,0 +1,12 @@
+FROM ubuntu:18.04
+
+RUN apt-get update
+
+WORKDIR /usr/bin
+
+COPY initfiles/* ./
+COPY config/* ./
+
+RUN chmod +x ./vault
+
+CMD [ "./configure_vault.sh" ] 
