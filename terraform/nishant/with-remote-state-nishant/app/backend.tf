@@ -1,6 +1,6 @@
 terraform {
     backend "s3" {
-        key = "core/terraform.tfstate"
+        key = "nishant/terraform.tfstate"
     }
     
 }
