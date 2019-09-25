@@ -29,6 +29,12 @@ vault operator unseal E33jr9wxKxR831dqdXfq+AIsFK0jS4PNbmc576U9HhY=
 export VAULT_TOKEN=s.qzfhS8qhmPX82vaYqnlEy36D
 ```
 
+6. Enable K/V secrets engine
+
+```
+vault secrets enable -path secret kv
+```
+
 6. Write a simple K/V value
 
 ```
