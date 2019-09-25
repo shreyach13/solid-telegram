@@ -11,6 +11,4 @@ variable "to_port" {
     default = "8080"
 }
 
-variable "public_ip" {
-    default = "1.1.1.1"
-}
+

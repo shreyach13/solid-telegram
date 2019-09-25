@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  create-vault:
+    environment:
+      image: shreyavault
+      ports:
+        - "8200:8200"
+      restart: always

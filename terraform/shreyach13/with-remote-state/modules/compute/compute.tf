@@ -4,7 +4,7 @@ provider "aws" {
 
 # A basic vm example to show how to provision a vm
 resource "aws_instance" "shreya_webserver"{
-  ami = "ami-00aa4671cbf840d82"
+  ami = var.ami_id
   instance_type = "t2.micro"
   user_data = <<-EOF
             #!/bin/bash
@@ -14,7 +14,7 @@ resource "aws_instance" "shreya_webserver"{
   #This will change the name of the instance
   security_groups = [var.security_group_id]
   tags = {
-    Name = "Red Team"
-    Owner = "RED"
+    Name = "Blue Team"
+    owner = "Blue Team"
   }
 }

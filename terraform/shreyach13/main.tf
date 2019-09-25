@@ -4,10 +4,10 @@ provider "aws" {
 
 #This is create a new bucket
 resource "aws_s3_bucket" "shreyatfstate" {
- bucket = "shreyaspace-tfstore"
+ bucket = "shreyaspace-tfstore-readteam"
  region = "eu-central-1"
  tags = {
     Name  = "Shreya bucket"
-    owner = var.owner
+    Owner = "ShreyaC"
   }
 }
