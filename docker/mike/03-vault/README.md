@@ -34,3 +34,10 @@ export VAULT_TOKEN=s.qzfhS8qhmPX82vaYqnlEy36D
 ```
 vault kv put secret/foo value=bar
 ```
+
+7. Get Vault health with
+
+```
+curl http://localhost:8200/v1/sys/health
+```
+
