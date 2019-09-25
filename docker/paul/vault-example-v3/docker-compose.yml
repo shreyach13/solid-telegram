@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  my_vault:
+#    container_name: vault
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      VAULT_VER: 1.2.3
+    ports:
+      - '8200:8200'
+
+  vault_setup:
+#    container_name: vault_setup
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      VAULT_ADDR: http://my_vault:8200
+      VAULT_VER: 1.2.3
+    command: '/vault/configure_vault.sh'
