@@ -10,12 +10,29 @@
     state: present
 - name: install python3-setuptools
   package:
-    name: python-setuptools
+    name: python3-setuptools
     state: present
-#- name: install python-pip packages
-#  package:
-#    name: python-pip
-#    state: present
+- shell: apt update
+#- get_url:
+#    url: https://bootstrap.pypa.io/get-pip.py
+#    dest: /tmp
+#- shell: python3 /tmp/get-pip.py --user
+#- name: Delete get-pip.py
+#  file:
+#    state: absent
+#    path: "/tmp/get-pip.py"
+- name: install python3-pip packages
+  package:
+    name: python3-pip
+    state: present
+- name: install awscli
+  package:
+    name: awscli
+    state: present
+- name: install unzip
+  package:
+    name: unzip
+    state: present
 - name: Download jenkins.war
   get_url:
     url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
@@ -28,8 +45,10 @@
     - Restart Jenkins
 - name: Flush Handlers
   meta: flush_handlers
-- shell: sudo systemctl enable jenkins
-- shell: sudo service jenkins start
+- name: Enable Jenkins service
+  service:
+    name: jenkins.service
+    enabled: yes
 - name: Wait until the password file shows up
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
@@ -37,3 +56,5 @@
   register: result
 - debug:
     msg: "Password: {{ result.stdout }}"
+- local_action: copy content={{ result.stdout }} dest=/Users/eric.echter/Documents/tmp_jenkins_password
+  become: false
