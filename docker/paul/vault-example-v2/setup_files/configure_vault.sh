@@ -2,8 +2,15 @@
 
 TMP_VAULT_DATA=/tmp/vault.init
 
-# Simple wait before adding proper loop to prerform test
-sleep 10
+echo "VAULT_ADDR=$VAULT_ADDR"
+
+# Simple wait loop for vault server
+set -euo pipefail
+
+while ! curl $VAULT_ADDR/v1/sys/health | grep initialized; do
+    echo "Waiting for vault to accept connections"
+    sleep 1;
+done
 
 # Save the output text to get the SEAL_KEY and ROOT_KEY
 vault operator init -key-shares 1 -key-threshold 1 >  $TMP_VAULT_DATA

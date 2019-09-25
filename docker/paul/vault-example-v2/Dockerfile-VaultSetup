@@ -11,6 +11,7 @@ RUN mkdir /vault
 RUN apk --no-cache add \
       bash \
       ca-certificates \
+      curl \
       wget
 
 # download and set up vault in /vault
