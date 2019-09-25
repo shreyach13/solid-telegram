@@ -1,0 +1,11 @@
+FROM mysql:5.7
+
+RUN apt-get update && apt-get install -y netcat
+
+ADD ./migrations.sh /migrations.sh
+
+# Build time
+RUN chmod +x /migrations.sh
+
+# Run time
+CMD ["/migrations.sh"]
