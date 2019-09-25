@@ -1,3 +1,3 @@
-bucket = "green-terraform-20190919"
+bucket = "red-ericechter-terraform"
 region = "eu-central-1"
 encrypt = true

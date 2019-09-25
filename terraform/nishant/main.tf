@@ -4,11 +4,11 @@ provider "aws" {
 
 
 #basic example of creating s3 bucket
-resource "aws_s3_bucket" "nishant-terraform" {
-    bucket = "nishant-terraform"
+resource "aws_s3_bucket" "green-terraform" {
+    bucket = "green-terraform-20190919"
     region = "eu-central-1"
     tags = {
-        owner = var.owner
+        Name = "green-terraform-bucket-20190919"
     }
     
 }
