@@ -1,0 +1,15 @@
+version: '2'
+  
+services:
+  vault:
+    image: dswvault:latest
+    hostname: dswvault
+    ports:
+      - "8200:8200"
+
+  vault_init:
+    environment:
+      VAULT_ADDR: 'http://vault:8200'
+    build:
+      context: .
+      dockerfile: vault_init
