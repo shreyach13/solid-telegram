@@ -9,12 +9,12 @@ resource "aws_instance" "web_server" {
     var.my-blue-security-group
   ]
   tags = {
-    Name  = "Eddy's web server" 
+    Name  = "Eddy's web server"
     owner = var.owner
   }
   user_data = <<-EOF
     #!/bin/bash
     echo "hello world from Eddy's first security sggroup" > index.html
-    nohup busybox httpd -f -p "${var.server_port} &
+    nohup busybox httpd -f -p "${var.server_port}" &
     EOF
 }
