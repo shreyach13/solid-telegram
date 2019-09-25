@@ -1,0 +1,35 @@
+---
+# tasks file for roles/jenkins
+- name: Install default jre
+  package:
+    name: default-jre
+    state: present
+- name: Install python 3
+  package:
+    name: python3
+    state: present
+- name: Install jenkins war file
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/local/etc
+- name: Template jenkins service file to /etc/systemd/system/jenkins.service
+  template:
+    src: jenkins.service
+    dest: /etc/systemd/system/jenkins.service
+  notify:
+    - restart_jenkins
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers
+- name: Wait until the file /root/.jenkins/secrets/initialAdminPassword is present before continuing
+  wait_for:
+    path: /root/.jenkins/secrets/initialAdminPassword
+- name: Execute shell script to display admin initialAdminPassword
+  shell: cat /root/.jenkins/secrets/initialAdminPassword
+  register: cat_result
+- debug:
+    var: cat_result.stdout
+
+- name: enable jenkins at boot
+  systemd:
+    name: jenkins
+    enabled: true

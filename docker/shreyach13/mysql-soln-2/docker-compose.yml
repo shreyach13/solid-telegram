@@ -1,0 +1,22 @@
+version: '2'
+volumes:
+  shreyavolume: {}
+services:
+  #my-app:
+#    build:
+#      context: .
+#      dockerfile: ./Dockerfile
+  mysql:
+    hostname: mysql
+    image: mysql:5.7
+    volumes:
+      - shreyavolume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'abc123'
+    ports:
+      - "3306:3306"
+
+  create_mysql:
+    build:
+      context: .
+      dockerfile: ./mysql_dockerfile
