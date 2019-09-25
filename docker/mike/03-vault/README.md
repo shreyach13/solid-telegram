@@ -14,13 +14,13 @@ export VAULT_ADDR=http://localhost:8200
 3. Initialize vault
 
 ```
-vault init -key-shares 1 -key-threshold 1
+vault operator init -key-shares 1 -key-threshold 1
 ```
 
 4. Unseal vault
 
 ```
-vault unseal E33jr9wxKxR831dqdXfq+AIsFK0jS4PNbmc576U9HhY=
+vault operator unseal E33jr9wxKxR831dqdXfq+AIsFK0jS4PNbmc576U9HhY=
 ```
 
 5. Export Root token
