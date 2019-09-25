@@ -6,10 +6,6 @@ services:
     container_name: vault_container
     ports:
       - '8200:8200'
-    #expose:
-    #  - '8200'
-    #volumes:
-    #  - mysql_vol:/var/lib/mysql
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,5 +22,3 @@ services:
     environment:
       VAULT_ADDR: 'http://vault:8200'
     command: bash /work/vault_init.sh
-#volumes:
-#  vault_vol:
