@@ -7,9 +7,13 @@ services:
       context: .
     ports:
       - "8200:8200"
-    environment:
-      VAULT_ADDR: 'http://localhost:8200'
-  dovault:
-    container_name: erik_init_vault
+  start_vault:
     build:
       context: .
+    environment:
+      VAULT_ADDR: 'http://my-vault:8200'
+    command: "./dovault.sh"
+  #dovault:
+  #  container_name: erik_init_vault
+  #  build:
+  #    context: .
