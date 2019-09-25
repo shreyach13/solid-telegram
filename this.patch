@@ -1,0 +1,266 @@
+diff --git a/docker-nishant/Dockerfile b/docker-nishant/Dockerfile
+new file mode 100644
+index 0000000..f506146
+--- /dev/null
++++ b/docker-nishant/Dockerfile
+@@ -0,0 +1,16 @@
++FROM mysql:5.7
++
++WORKDIR /home/app
++
++RUN apt-get update &&\
++    apt-get install -y python &&\
++    apt-get install -y python-pip
++#apt-get install python-mysqldb
++RUN pip install sqlalchemy
++
++ADD create_db.py /home/app/
++#ENV MYSQL_DATABASE nishant-db
++
++#ADD test.sh /docker-entrypoint-initdb.d/
++
++#ADD test.sql /docker-entrypoint-initdb.d/
+diff --git a/docker-nishant/SimpleWeb/docker-compose.yml b/docker-nishant/SimpleWeb/docker-compose.yml
+new file mode 100644
+index 0000000..9672339
+--- /dev/null
++++ b/docker-nishant/SimpleWeb/docker-compose.yml
+@@ -0,0 +1,14 @@
++version: '2.0'
++
++services:
++  nishant-mysql-database:
++    build: 
++      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant
++      dockerfile: Dockerfile
++    container_name: nishant-mysql-database
++    restart: always
++    ports:
++      - 4003:3306
++    volumes:
++      - testdb:/var/lib/mysql
++    
+\ No newline at end of file
+diff --git a/docker-nishant/SimpleWeb/index.js b/docker-nishant/SimpleWeb/index.js
+new file mode 100644
+index 0000000..fe7d2af
+--- /dev/null
++++ b/docker-nishant/SimpleWeb/index.js
+@@ -0,0 +1,11 @@
++const express = require('express');
++
++const app = express()
++
++app.get('/', (req, res) => {
++    res.send('Hello There!');
++});
++
++app.listen(8080, () => {
++    console.log('Listening at 8080');
++});
+\ No newline at end of file
+diff --git a/docker-nishant/SimpleWeb/package.json b/docker-nishant/SimpleWeb/package.json
+new file mode 100644
+index 0000000..25cdb9f
+--- /dev/null
++++ b/docker-nishant/SimpleWeb/package.json
+@@ -0,0 +1,8 @@
++{
++    "dependencies": {
++        "express": "*"
++    },
++    "scripts": {
++        "start": "node index.js"
++    }
++}
+\ No newline at end of file
+diff --git a/docker-nishant/create_db.py b/docker-nishant/create_db.py
+new file mode 100644
+index 0000000..9829343
+--- /dev/null
++++ b/docker-nishant/create_db.py
+@@ -0,0 +1,10 @@
++#!/usr/bin/python
++
++from sqlalchemy import create_engine
++
++engine = create_engine("mysql://root:root007@localhost")
++conn = engine.connect()
++
++conn.execute("create database test123")
++
++conn.close()
+\ No newline at end of file
+diff --git a/docker-nishant/docker-compose.yml b/docker-nishant/docker-compose.yml
+new file mode 100644
+index 0000000..1eaac39
+--- /dev/null
++++ b/docker-nishant/docker-compose.yml
+@@ -0,0 +1,20 @@
++version: '2.0'
++
++services:
++  nishant-mysql-database:
++    container_name: nishant-mysql-database1
++    build:
++      context: .
++      dockerfile: Dockerfile
++    restart: always
++    ports:
++      - 4003:3306
++    volumes:
++      - testdb1:/var/lib/mysql
++    environment:
++      - MYSQL_ROOT_PASSWORD=root007
++    command: --init-file /home/app/create_db.py
++volumes:
++  testdb1: {}
++
++    
+diff --git a/docker-nishant/test.sh b/docker-nishant/test.sh
+new file mode 100644
+index 0000000..44ae4e1
+--- /dev/null
++++ b/docker-nishant/test.sh
+@@ -0,0 +1,3 @@
++#/bin/sh
++
++mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e "create database nikhildb13"
+\ No newline at end of file
+diff --git a/docker-nishant/test.sql b/docker-nishant/test.sql
+new file mode 100644
+index 0000000..e7880d0
+--- /dev/null
++++ b/docker-nishant/test.sql
+@@ -0,0 +1 @@
++create database nishanttestdb23;
+\ No newline at end of file
+diff --git a/docker-nishant/vault_container/Dockerfile b/docker-nishant/vault_container/Dockerfile
+new file mode 100644
+index 0000000..9ad8cb8
+--- /dev/null
++++ b/docker-nishant/vault_container/Dockerfile
+@@ -0,0 +1,15 @@
++FROM alpine:3.10
++
++WORKDIR /home/vault
++
++ADD vault_1.2.2_linux_amd64.zip /home/vault/
++ADD vault.hcl /home/vault/vault.hcl
++RUN chmod 777 /home/vault/vault.hcl
++RUN unzip /home/vault/vault_1.2.2_linux_amd64.zip
++ADD run_server.sh /home/vault/run_server.sh
++RUN chmod +x /home/vault/run_server.sh
++RUN cp /home/vault/vault /usr/bin/vault
++RUN chmod +x /usr/bin/vault
++
++CMD ["/home/vault/run_server.sh"]
++
+diff --git a/docker-nishant/vault_container/docker-compose.yml b/docker-nishant/vault_container/docker-compose.yml
+new file mode 100644
+index 0000000..4889cd0
+--- /dev/null
++++ b/docker-nishant/vault_container/docker-compose.yml
+@@ -0,0 +1,31 @@
++version: '2.1'
++
++services:
++  vault_container_1:
++    container_name: vault_container_1
++    build:
++      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant/vault_container
++      dockerfile: Dockerfile
++    restart: always
++    networks:
++      vault_network:
++        ipv4_address: 172.30.0.3
++    hostname: vault_container1
++    ports:
++      - 8200:8200
++  vault_container_2:
++    container_name: vault_container_2
++    build:
++      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant/vault_container/vault_container2
++      dockerfile: Dockerfile
++    networks:
++      vault_network:
++        ipv4_address: 172.30.0.4
++
++networks:
++ vault_network:
++  driver: bridge
++  ipam:
++   config:
++    - subnet: 172.30.0.0/16
++      ip_range: 172.30.0.0/24
+\ No newline at end of file
+diff --git a/docker-nishant/vault_container/run_server.sh b/docker-nishant/vault_container/run_server.sh
+new file mode 100644
+index 0000000..04adc15
+--- /dev/null
++++ b/docker-nishant/vault_container/run_server.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++
++vault server -config /home/vault/vault.hcl
+\ No newline at end of file
+diff --git a/docker-nishant/vault_container/vault_container2/Dockerfile b/docker-nishant/vault_container/vault_container2/Dockerfile
+new file mode 100644
+index 0000000..dd875b7
+--- /dev/null
++++ b/docker-nishant/vault_container/vault_container2/Dockerfile
+@@ -0,0 +1,15 @@
++FROM alpine:3.10
++
++WORKDIR /home/vault
++
++ADD vault_1.2.2_linux_amd64.zip /home/vault/
++RUN unzip /home/vault/vault_1.2.2_linux_amd64.zip
++RUN cp /home/vault/vault /usr/bin/vault
++RUN chmod +x /usr/bin/vault
++ADD run_script.sh /run_script.sh
++RUN chmod +x /run_script.sh
++
++CMD ["/run_script.sh"]
++
++
++
+diff --git a/docker-nishant/vault_container/vault_container2/run_script.sh b/docker-nishant/vault_container/vault_container2/run_script.sh
+new file mode 100644
+index 0000000..b0acf1a
+--- /dev/null
++++ b/docker-nishant/vault_container/vault_container2/run_script.sh
+@@ -0,0 +1,18 @@
++#!/bin/sh
++
++sleep 10
++export VAULT_ADDR=http://172.30.0.3:8200
++OUTPUT=`vault operator init -key-shares 1 -key-threshold 1 | egrep 'Unseal Key 1|Initial Root'`
++op1=`echo $OUTPUT | awk '{print $4}'`
++op2=`echo $OUTPUT | awk '{print $8}'`
++
++echo op1 is ${op1}
++echo op2 is ${op2}
++vault operator unseal ${op1}
++
++export VAULT_TOKEN=${op2}
++
++vault secrets enable -path secret kv
++
++vault kv put secret/foo value=bar
++
+diff --git a/docker-nishant/vault_container/vault_container2/vault_1.2.2_linux_amd64.zip b/docker-nishant/vault_container/vault_container2/vault_1.2.2_linux_amd64.zip
+new file mode 100644
+index 0000000..3b033e2
+Binary files /dev/null and b/docker-nishant/vault_container/vault_container2/vault_1.2.2_linux_amd64.zip differ
+diff --git a/red-team-final b/red-team-final
+new file mode 160000
+index 0000000..c8e99c1
+--- /dev/null
++++ b/red-team-final
+@@ -0,0 +1 @@
++Subproject commit c8e99c1cdcb9cb020c66c1ec02e949c3fed70080-dirty
+diff --git a/vault b/vault
+new file mode 100755
+index 0000000..460da38
+Binary files /dev/null and b/vault differ
