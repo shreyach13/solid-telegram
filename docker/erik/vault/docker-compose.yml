@@ -1,0 +1,15 @@
+version: "2"
+services:
+  my-vault:
+    container_name: erik_vault
+    #image: erik-vault:1.1
+    build:
+      context: .
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: 'http://localhost:8200'
+  dovault:
+    container_name: erik_init_vault
+    build:
+      context: .
