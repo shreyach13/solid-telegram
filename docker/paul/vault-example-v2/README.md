@@ -1,3 +1,4 @@
+This docker-compose example will deploy 2 vault containers, one (my_vault) will run the main vault server, and once initialsed, the other (vault_setup) will configure the vault and create a new secret... 
 ```bash
 .
 ├── Dockerfile-Vault             <- Builds the image for the main vault process
