@@ -11,6 +11,10 @@ FROM mysql:5.7
 
 #CMD ["npm", "start"]
 
-ADD mysqlbash.sh /
+COPY mysqlbash.sh /
+
+# Build time (can be multiple).
 RUN chmod +x /mysqlbash.sh
+
+# Run time: only one CMD can be used.
 CMD ["/mysqlbash.sh"]
