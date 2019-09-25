@@ -1,3 +1,4 @@
+```bash
 .
 ├── Dockerfile-Vault             <- Builds the image for the main vault process
 ├── Dockerfile-VaultSetup        <- Builds the image for the configuring the vault server
@@ -9,3 +10,4 @@
     └── vault.hcl
 
 1 directory, 7 files
+```
