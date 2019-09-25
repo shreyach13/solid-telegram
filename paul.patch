@@ -1,0 +1,1363 @@
+diff --git a/.gitignore b/.gitignore
+index c9190ad..ca49996 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -3,3 +3,4 @@
+ .terraform
+ terraform.tfstate
+ terraform.tfstate.backup
++vault
+diff --git a/docker/paul/Makefile b/docker/paul/Makefile
+new file mode 100644
+index 0000000..8e4da6f
+--- /dev/null
++++ b/docker/paul/Makefile
+@@ -0,0 +1,23 @@
++#
++#
++test:
++	docker-compose exec my_mysql mysql -proot -e 'show databases;'
++
++vault:
++	wget https://releases.hashicorp.com/vault/1.2.3/vault_1.2.3_linux_amd64.zip -O vault.zip
++	sha256 vault.zip | grep fe15676404aff35cb45f7c957f90491921b9269d79a8f933c5a36e26a431bfc4
++
++up: .build
++	docker-compose up
++
++.build: Dockerfile migrations.sh
++	docker-compose build
++	touch .build
++
++clean:
++	docker-compose down --rmi local --volumes
++
++all:
++	@echo "Makefile needs your attention"
++
++
+diff --git a/docker/paul/docker_compose_tests/Eg1-Env/Dockerfile b/docker/paul/docker_compose_tests/Eg1-Env/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg1-Env/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg1-Env/docker-compose.yml b/docker/paul/docker_compose_tests/Eg1-Env/docker-compose.yml
+new file mode 100644
+index 0000000..d7ea40d
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg1-Env/docker-compose.yml
+@@ -0,0 +1,27 @@
++version: '2'
++
++services:
++  pauls_app:
++    depends_on:
++      - my_mysql
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    image: mysql:5.7
++    environment:
++      MYSQL_DATABASE: "paulsdb"
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/index.js
+new file mode 100644
+index 0000000..1fbbeab
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg1Env</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg1-Env/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile b/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile-CopySchema b/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile-CopySchema
+new file mode 100644
+index 0000000..4bf8ee8
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/Dockerfile-CopySchema
+@@ -0,0 +1,7 @@
++FROM mysql:5.7
++
++# Place script in the startup directory
++WORKDIR /docker-entrypoint-initdb.d/
++
++COPY schema.sql .
++
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/README.md b/docker/paul/docker_compose_tests/Eg2-CopySchema/README.md
+new file mode 100644
+index 0000000..51f012e
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/README.md
+@@ -0,0 +1,2 @@
++This version uses the build option to reference Dockerfile-CopySchema which
++transfers the schema.sql file to the startup directory.
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/docker-compose.yml b/docker/paul/docker_compose_tests/Eg2-CopySchema/docker-compose.yml
+new file mode 100644
+index 0000000..6dcaf88
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/docker-compose.yml
+@@ -0,0 +1,26 @@
++version: '2'
++
++services:
++  pauls_app:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    build:
++      context: .
++      dockerfile: Dockerfile-CopySchema
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/schema.sql b/docker/paul/docker_compose_tests/Eg2-CopySchema/schema.sql
+new file mode 100755
+index 0000000..c014c29
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/schema.sql
+@@ -0,0 +1,9 @@
++create database pauldb;
++use pauldb;
++
++CREATE TABLE paul
++(
++id INTEGER AUTO_INCREMENT,
++name TEXT,
++PRIMARY KEY (id)
++) COMMENT='This is a table called paul';
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/index.js
+new file mode 100644
+index 0000000..cff08db
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg2CopySchema</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg2-CopySchema/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile-Provisioner b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile-Provisioner
+new file mode 100644
+index 0000000..4bf8ee8
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/Dockerfile-Provisioner
+@@ -0,0 +1,7 @@
++FROM mysql:5.7
++
++# Place script in the startup directory
++WORKDIR /docker-entrypoint-initdb.d/
++
++COPY schema.sql .
++
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/README.md b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/README.md
+new file mode 100644
+index 0000000..51f012e
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/README.md
+@@ -0,0 +1,2 @@
++This version uses the build option to reference Dockerfile-CopySchema which
++transfers the schema.sql file to the startup directory.
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/docker-compose.yml b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/docker-compose.yml
+new file mode 100644
+index 0000000..e4f745c
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/docker-compose.yml
+@@ -0,0 +1,32 @@
++version: '2'
++
++services:
++  pauls_app:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    image:
++      mysql:5.7
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++  my_mysql_provisioner:
++    depends_on:
++      - my_mysql
++    build:
++      context: .
++      dockerfile: Dockerfile-Provisioner
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/schema.sql b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/schema.sql
+new file mode 100755
+index 0000000..c014c29
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/schema.sql
+@@ -0,0 +1,9 @@
++create database pauldb;
++use pauldb;
++
++CREATE TABLE paul
++(
++id INTEGER AUTO_INCREMENT,
++name TEXT,
++PRIMARY KEY (id)
++) COMMENT='This is a table called paul';
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/index.js
+new file mode 100644
+index 0000000..b19cc2f
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg3Provisioner</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-CopyContainer-incomplete/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile-Provisioner b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile-Provisioner
+new file mode 100644
+index 0000000..4bf8ee8
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/Dockerfile-Provisioner
+@@ -0,0 +1,7 @@
++FROM mysql:5.7
++
++# Place script in the startup directory
++WORKDIR /docker-entrypoint-initdb.d/
++
++COPY schema.sql .
++
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/README.md b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/README.md
+new file mode 100644
+index 0000000..6e2f59a
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/README.md
+@@ -0,0 +1,2 @@
++This version uses an additional container to call the new mysql container and
++setup the default database
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/docker-compose.yml b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/docker-compose.yml
+new file mode 100644
+index 0000000..8e4af48
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/docker-compose.yml
+@@ -0,0 +1,38 @@
++version: '2'
++
++services:
++#  pauls_app:
++#    build:
++#      context: .
++#      dockerfile: Dockerfile
++#    ports:
++#      - '8088:8088'
++#    volumes:
++#      - /Users/paul.broughton/work_dir:/work_ro:ro
++#      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    image:
++      mysql:5.7
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++  my_mysql_provisioner:
++    depends_on:
++      - my_mysql
++    image: 
++      mysql:5.7
++    environment:
++      MYSQL_ROOT_PASSWORD: cde456
++    command: bash -c "sleep 30 && mysql -uroot -pabc123 -hmy_mysql -e 'create database paulEg3;'" 
++#    build:
++#      context: .
++#      dockerfile: Dockerfile-Provisioner
++#      command: [ "mysql", "-u", "root", "-p", "abc123", "-h", "my_mysql", "-e", "create database paulEg3" ]
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/index.js
+new file mode 100644
+index 0000000..b19cc2f
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg3Provisioner</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner-method2/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile b/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile-Provisioner b/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile-Provisioner
+new file mode 100644
+index 0000000..7dddcd0
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/Dockerfile-Provisioner
+@@ -0,0 +1,11 @@
++FROM mysql:5.7
++
++RUN apt-get update && apt-get install -y netcat
++
++ADD ./migrations.sh /migrations.sh
++
++# Build time
++RUN chmod +x /migrations.sh
++
++# Run time
++CMD ["/migrations.sh"]
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/README.md b/docker/paul/docker_compose_tests/Eg3-Provisioner/README.md
+new file mode 100644
+index 0000000..6e2f59a
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/README.md
+@@ -0,0 +1,2 @@
++This version uses an additional container to call the new mysql container and
++setup the default database
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/docker-compose.yml b/docker/paul/docker_compose_tests/Eg3-Provisioner/docker-compose.yml
+new file mode 100644
+index 0000000..6e6ed98
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/docker-compose.yml
+@@ -0,0 +1,29 @@
++version: '2'
++
++services:
++  pauls_app:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    image:
++      mysql:5.7
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++  my_provisioner:
++    build:
++      context: .
++      dockerfile: Dockerfile-Provisioner
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/migrations.sh b/docker/paul/docker_compose_tests/Eg3-Provisioner/migrations.sh
+new file mode 100755
+index 0000000..ca1acc0
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/migrations.sh
+@@ -0,0 +1,19 @@
++#! /usr/bin/env bash
++# http://redsymbol.net/articles/unofficial-bash-strict-mode/
++set -euo pipefail
++
++date
++
++while ! nc -zvw3 my_mysql 3306; do
++    echo "Waiting for database to accept connections"
++    sleep 1;
++done
++
++while ! mysql -h my_mysql -uroot -pabc123 -e 'show databases;'; do
++    echo "Waiting for database to accept commands"
++    sleep 1;
++done
++
++mysql -h my_mysql -uroot -pabc123 -e 'create database paulEg3new;'
++
++exit 0
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/index.js
+new file mode 100644
+index 0000000..b19cc2f
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg3Provisioner</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg3-Provisioner/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile b/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile-CopyScript b/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile-CopyScript
+new file mode 100644
+index 0000000..4aff994
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/Dockerfile-CopyScript
+@@ -0,0 +1,7 @@
++FROM mysql:5.7
++
++# Place script in the startup directory
++WORKDIR /docker-entrypoint-initdb.d/
++
++COPY createdb.sh .
++
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/README.md b/docker/paul/docker_compose_tests/Eg4-CopyScript/README.md
+new file mode 100644
+index 0000000..6ca797f
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/README.md
+@@ -0,0 +1,2 @@
++This version uses the build option to reference Dockerfile-CopyScript which
++transfers the createdb.sh file to the startup directory.
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/createdb.sh b/docker/paul/docker_compose_tests/Eg4-CopyScript/createdb.sh
+new file mode 100755
+index 0000000..e51a481
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/createdb.sh
+@@ -0,0 +1,4 @@
++# echo "create database paulhere;" | mysql -h mysql_server -uroot -pabc123
++sleep 30
++echo "create database pauleg4;" | mysql -uroot -pabc123
++echo "Script run during build"
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/docker-compose.yml b/docker/paul/docker_compose_tests/Eg4-CopyScript/docker-compose.yml
+new file mode 100644
+index 0000000..a7bad60
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/docker-compose.yml
+@@ -0,0 +1,26 @@
++version: '2'
++
++services:
++  pauls_app:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    build:
++      context: .
++      dockerfile: Dockerfile-CopyScript
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/index.js
+new file mode 100644
+index 0000000..6004a9f
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg4CopyScript</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg4-CopyScript/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile-MysqlScript b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile-MysqlScript
+new file mode 100644
+index 0000000..4f8553a
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/Dockerfile-MysqlScript
+@@ -0,0 +1,5 @@
++FROM mysql:5.7
++
++COPY init_db.sh /tmp/init_db.sh
++RUN /tmp/init_db.sh
++
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/README.md b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/README.md
+new file mode 100644
+index 0000000..55e88f4
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/README.md
+@@ -0,0 +1,2 @@
++This version uses the build option to reference Dockerfile-MysqlScript which
++transfers the init_db.sh file to the startup directory.
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/docker-compose.yml b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/docker-compose.yml
+new file mode 100644
+index 0000000..90df713
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/docker-compose.yml
+@@ -0,0 +1,26 @@
++version: '2'
++
++services:
++  pauls_app:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    build:
++      context: .
++      dockerfile: Dockerfile-MysqlScript
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/init_db.sh b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/init_db.sh
+new file mode 100755
+index 0000000..429040d
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/init_db.sh
+@@ -0,0 +1,4 @@
++#!/bin/bash
++mysqld &
++sleep 5
++echo "CREATE DATABASE paulEg5;" | mysql -uroot -pabc123
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/index.js b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/index.js
+new file mode 100644
+index 0000000..ff1c668
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - Eg5MysqlScript</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/package.json b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/Eg5-MysqlScript-incomplete/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/docker_compose_tests/oldstuff/Dockerfile b/docker/paul/docker_compose_tests/oldstuff/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/oldstuff/Dockerfile-CopyScript b/docker/paul/docker_compose_tests/oldstuff/Dockerfile-CopyScript
+new file mode 100644
+index 0000000..7757a33
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/Dockerfile-CopyScript
+@@ -0,0 +1,10 @@
++FROM mysql:5.7
++
++WORKDIR /home/app
++
++COPY dbcreate .
++RUN chmod +x /home/app/dbcreate
++
++#RUN npm install
++
++CMD ["sh", "/home/app/dbcreate"]
+diff --git a/docker/paul/docker_compose_tests/oldstuff/dbcreate b/docker/paul/docker_compose_tests/oldstuff/dbcreate
+new file mode 100755
+index 0000000..b4d6245
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/dbcreate
+@@ -0,0 +1,3 @@
++# echo "create database paulhere;" | mysql -h mysql_server -uroot -pabc123
++echo "create database paulhere;" | mysql -uroot -pabc123
++echo "Script run during build"
+diff --git a/docker/paul/docker_compose_tests/oldstuff/docker-compose.yml b/docker/paul/docker_compose_tests/oldstuff/docker-compose.yml
+new file mode 100644
+index 0000000..4e55875
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/docker-compose.yml
+@@ -0,0 +1,37 @@
++version: '2'
++
++services:
++#  pauls_app:
++#    depends_on:
++#      - my_mysql
++#    build:
++#      context: .
++#      dockerfile: Dockerfile
++#    ports:
++#      - '8088:8088'
++#    volumes:
++#      - /Users/paul.broughton/work_dir:/work_ro:ro
++#      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    image: mysql:5.7
++#    build:
++#      context: .
++#      dockerfile: Dockerfile-CopyScript
++    #command: /home/app/dbcreate
++    environment:
++#      MYSQL_DATABASE: "paulsdb"
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++#  my_mysql_provisioner:
++#    build:
++#      context: .
++#      dockerfile: dockerfile1
++#    command: /home/app/dbcreate
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/docker_compose_tests/oldstuff/mysql-eg/Dockerfile b/docker/paul/docker_compose_tests/oldstuff/mysql-eg/Dockerfile
+new file mode 100644
+index 0000000..617e218
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/mysql-eg/Dockerfile
+@@ -0,0 +1,10 @@
++FROM mysql:5.7
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/docker_compose_tests/oldstuff/simpleweb/index.js b/docker/paul/docker_compose_tests/oldstuff/simpleweb/index.js
+new file mode 100644
+index 0000000..f2a3a38
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - v2</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/docker_compose_tests/oldstuff/simpleweb/package.json b/docker/paul/docker_compose_tests/oldstuff/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/docker_compose_tests/oldstuff/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/step_by_step/Dockerfile b/docker/paul/step_by_step/Dockerfile
+new file mode 100644
+index 0000000..6a59835
+--- /dev/null
++++ b/docker/paul/step_by_step/Dockerfile
+@@ -0,0 +1,10 @@
++FROM node:current-alpine
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/step_by_step/dbcreate b/docker/paul/step_by_step/dbcreate
+new file mode 100755
+index 0000000..3f86ada
+--- /dev/null
++++ b/docker/paul/step_by_step/dbcreate
+@@ -0,0 +1,2 @@
++sleep 10
++echo "create database paulhere;" | mysql -h mysql_server -uroot -pabc123
+diff --git a/docker/paul/step_by_step/docker-compose.yml b/docker/paul/step_by_step/docker-compose.yml
+new file mode 100644
+index 0000000..0a62b0c
+--- /dev/null
++++ b/docker/paul/step_by_step/docker-compose.yml
+@@ -0,0 +1,38 @@
++version: '2'
++
++services:
++  pauls_app:
++    depends_on:
++      - my_mysql
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8088:8088'
++    volumes:
++      - /Users/paul.broughton/work_dir:/work_ro:ro
++      - /Users/paul.broughton/work_dir:/work_rw
++
++  my_mysql:
++    hostname: mysql_server
++    image: mysql:5.7
++    build:
++      context: .
++      dockerfile: dockerfile1
++    #command: /home/app/dbcreate
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123
++    volumes:
++      - new-mysql-vol:/var/lib/mysql
++
++  my_mysql_provisioner:
++    build:
++      context: .
++      dockerfile: dockerfile1
++    command: /home/app/dbcreate
++
++
++
++volumes:
++  new-mysql-vol:
++    driver: local
+diff --git a/docker/paul/step_by_step/dockerfile1 b/docker/paul/step_by_step/dockerfile1
+new file mode 100644
+index 0000000..98a0904
+--- /dev/null
++++ b/docker/paul/step_by_step/dockerfile1
+@@ -0,0 +1,5 @@
++FROM mysql:5.7
++
++WORKDIR /home/app
++
++COPY dbcreate .
+diff --git a/docker/paul/step_by_step/mysql-eg/Dockerfile b/docker/paul/step_by_step/mysql-eg/Dockerfile
+new file mode 100644
+index 0000000..617e218
+--- /dev/null
++++ b/docker/paul/step_by_step/mysql-eg/Dockerfile
+@@ -0,0 +1,10 @@
++FROM mysql:5.7
++
++WORKDIR /home/app
++
++COPY simpleweb/package.json .
++COPY simpleweb/index.js .
++
++RUN npm install
++
++CMD ["npm", "start"]
+diff --git a/docker/paul/step_by_step/simpleweb/index.js b/docker/paul/step_by_step/simpleweb/index.js
+new file mode 100644
+index 0000000..f2a3a38
+--- /dev/null
++++ b/docker/paul/step_by_step/simpleweb/index.js
+@@ -0,0 +1,12 @@
++const express =
++require('express');
++
++const app = express();
++
++app.get('/', (req, res) => {
++  res.send('<h1>Hello Paul!! - v2</h1>');
++});
++
++app.listen(8088, () => {
++  console.log('Listening at 8088');
++});
+diff --git a/docker/paul/step_by_step/simpleweb/package.json b/docker/paul/step_by_step/simpleweb/package.json
+new file mode 100644
+index 0000000..a540460
+--- /dev/null
++++ b/docker/paul/step_by_step/simpleweb/package.json
+@@ -0,0 +1,8 @@
++{
++  "dependencies": {
++    "express": "*"
++  },
++  "scripts": {
++    "start": "node index.js"
++  }
++}
+diff --git a/docker/paul/useful-docker-commands b/docker/paul/useful-docker-commands
+new file mode 100644
+index 0000000..aa05957
+--- /dev/null
++++ b/docker/paul/useful-docker-commands
+@@ -0,0 +1,159 @@
++docker build .
++
++docker run -it b19eea2d2340
++
++# Tag an image
++docker build --tag my-nodejs:v1.0 .
++
++# List images
++docker images
++REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
++my-nodejs             v1.0                0899da586e32        29 minutes ago      83.5MB
++<none>                <none>              c1cc2bbbeee4        17 hours ago        83.5MB
++<none>                <none>              b19eea2d2340        17 hours ago        83.5MB
++
++# Run a docker image
++docker run -it 0899da586e32
++
++# Look at history of an image
++docker history 0899da586e32
++
++
++DOCKER ECR (with AWS)
++0. Create a new REPOSITORY in AWS ecr
++
++1. Authenticate with AWS
++$(aws ecr get-login --no-include-email --region eu-central-1)
++WARNING! Using --password via the CLI is insecure. Use --password-stdin.
++Login Succeeded
++
++# Tag the built image
++$ docker build -t my-image .
++
++# Tag the image to be uploaded (with paul in this case")
++$ docker tag my-image:latest 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
++
++$ docker push 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
++The push refers to repository [426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image]
++5b3380ec8065: Pushed
++72eba3c3296a: Pushed
++..
++..
++
++# Run the remotely tagged image
++$ docker run -it -p 8088:8088 426714351745.dkr.ecr.eu-central-1.amazonaws.com/my-image:paul
++
++
++Environmental Variables
++
++# Pass a mysql password when running the container
++$ docker run -e "MYSQL_ROOT_PASSWORD=abc123" mysql:5.7
++
++# Use -d to background the process
++$ docker run -d -e "MYSQL_ROOT_PASSWORD=abc123" mysql:5.7
++
++# view docker logs
++$ docker logs
++
++# Connect to container (using assigned name)
++$ docker exec -it pensive_curran bash
++    # mysql -uroot -p
++$ docker exec -it pensive_curran bash -c "mysql -uroot -p"
++$ docker exec -it pensive_curran mysql -u root -p
++$ docker exec -it pensive_curran bash -c "mysql -uroot -p$(echo $MYSQL_ROOT_PASSWORD)"
++
++
++DOCKER RUNTIME
++
++Storage Options
++- Bind mounts
++    Takes a folder from the host and mounts in the container
++
++    $ docker run ... -v /user/sub-dir:/app ...
++
++- Volumes
++
++    $ docker run ... -v myvol:/app:ro ...   <- ro
++    $ docker run ... -v myvol:/app ...
++
++    # Create a volume manually - NOTE - better do this in docker-compose
++    $ docker volume create --label name=paul
++
++    $ docker volume create --label name=paul
++2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9
++
++    $ docker inspect 2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9
++[
++    {
++        "CreatedAt": "2019-09-24T11:05:49Z",
++        "Driver": "local",
++        "Labels": {
++            "name": "paul"
++        },
++        "Mountpoint": "/var/lib/docker/volumes/2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9/_data",
++        "Name": "2900be3bb4b2fd4f91a88fbfa62d0e584a256d884d947b320fa78ae6db4ca8e9",
++        "Options": {},
++        "Scope": "local"
++    }
++]
++
++# Docker processes
++
++# Like top but for docker
++$ docker stats
++
++# View running containers
++$ docker ps [- a]
++
++
++Container Orchestration
++
++# Typically only use docker compose for relatively small solutions (up to 10)...
++# Ideally used for small, local testing
++$ docker compose
++
++- Docker swarm
++- Kubernetes
++- Hashicorp Nomad
++- Mesosphere
++
++# Create a docker-compose.yml
++version: '2'
++
++services:
++  my_app:
++    depends_on:                         <- Wait until my_mysql is up
++      - my_mysql
++    build:
++      context: .
++      dockerfile: Dockerfile
++  my_mysql:
++    image: mysql:5.7
++    environment:
++      MYSQL_ROOT_PASSWORD: abc123       (${FOOBAR}  )
++
++$ docker-compose build
++
++# Start a docker based solution
++$ docker-compose up -d
++
++$ docker-compose down
++
++# Will connect to a running container (instead of docker exec -it fffffff sh)
++$ docker-compose exec my_app sh
++
++
++REDUCING IMAGE SIZE
++
++MULTI-STAGE BUILDS
++- Only take artifacts from previous stages into future stages
++- Results in much smaller images being built
++
++COMBINE ADD/COPY/RUN COMMANDS as often as possible
++- Connecting commands with && will run all commands (including any cleanup actions) in the same layer
++
++SQUASHING LAYERS
++- With latest docker, it is possible to add the --squash option when building. This will result in the final image being smaller BUT will affect the history
++
++Scanning images for Security weaknesses
++Snyk (used by SDU)
+diff --git a/docker/paul/vault-example/Dockerfile b/docker/paul/vault-example/Dockerfile
+new file mode 100644
+index 0000000..4ace5e6
+--- /dev/null
++++ b/docker/paul/vault-example/Dockerfile
+@@ -0,0 +1,11 @@
++FROM ubuntu:18.04
++
++RUN apt-get update
++
++WORKDIR /usr/bin
++
++COPY config/* ./
++
++RUN chmod +x ./vault
++
++CMD [ "./init_script.sh" ] 
+diff --git a/docker/paul/vault-example/Dockerfile-InitVault b/docker/paul/vault-example/Dockerfile-InitVault
+new file mode 100644
+index 0000000..fa9912b
+--- /dev/null
++++ b/docker/paul/vault-example/Dockerfile-InitVault
+@@ -0,0 +1,12 @@
++FROM ubuntu:18.04
++
++RUN apt-get update
++
++WORKDIR /usr/bin
++
++COPY initfiles/* ./
++COPY config/* ./
++
++RUN chmod +x ./vault
++
++CMD [ "./configure_vault.sh" ] 
+diff --git a/docker/paul/vault-example/config/init_script.sh b/docker/paul/vault-example/config/init_script.sh
+new file mode 100755
+index 0000000..1b5eb26
+--- /dev/null
++++ b/docker/paul/vault-example/config/init_script.sh
+@@ -0,0 +1,5 @@
++#!/bin/bash
++#cd /home/app
++vault server --config vault.hcl
++
++
+diff --git a/docker/paul/vault-example/config/vault b/docker/paul/vault-example/config/vault
+new file mode 100755
+index 0000000..b1943ca
+Binary files /dev/null and b/docker/paul/vault-example/config/vault differ
+diff --git a/docker/paul/vault-example/config/vault.hcl b/docker/paul/vault-example/config/vault.hcl
+new file mode 100644
+index 0000000..4497b6c
+--- /dev/null
++++ b/docker/paul/vault-example/config/vault.hcl
+@@ -0,0 +1,7 @@
++storage "inmem" {}
++disable_mlock = true
++
++listener "tcp" {
++    address = "0.0.0.0:8200"
++    tls_disable = true
++}
+diff --git a/docker/paul/vault-example/docker-compose.yml b/docker/paul/vault-example/docker-compose.yml
+new file mode 100644
+index 0000000..de95972
+--- /dev/null
++++ b/docker/paul/vault-example/docker-compose.yml
+@@ -0,0 +1,16 @@
++version: '2'
++
++services:
++  my_vault:
++    build:
++      context: .
++      dockerfile: Dockerfile
++    ports:
++      - '8200:8200'
++
++  vault_setup:
++    build:
++      context: .
++      dockerfile: Dockerfile-InitVault
++    environment:
++      VAULT_ADDR: http://my_vault:8200
+diff --git a/docker/paul/vault-example/initfiles/configure_vault.sh b/docker/paul/vault-example/initfiles/configure_vault.sh
+new file mode 100755
+index 0000000..82106c7
+--- /dev/null
++++ b/docker/paul/vault-example/initfiles/configure_vault.sh
+@@ -0,0 +1,21 @@
++#!/bin/bash
++
++sleep 10
++
++# Create some output for later usage
++vault operator init -key-shares 1 -key-threshold 1 > /tmp/vault.init
++
++SEAL_KEY=`cat /tmp/vault.init | grep ^Unseal | awk ' { print $NF } '`
++ROOT_KEY=`cat /tmp/vault.init | grep "Initial Root" | awk ' { print $NF } '`
++
++echo "SEAL_KEY=$SEAL_KEY"
++echo "ROOT_KEY=$ROOT_KEY"
++
++# Unseal the vault
++vault operator unseal "$SEAL_KEY"
++
++export VAULT_TOKEN="$ROOT_KEY"
++vault secrets enable -path secret kv
++
++# Write a simple K/V value
++vault kv put secret/foo value=bar
+diff --git a/docker/paul/vault.zip b/docker/paul/vault.zip
+new file mode 100644
+index 0000000..d72f3a5
+Binary files /dev/null and b/docker/paul/vault.zip differ

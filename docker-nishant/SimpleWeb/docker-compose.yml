@@ -1,0 +1,14 @@
+version: '2.0'
+
+services:
+  nishant-mysql-database:
+    build: 
+      context: /Users/nishant.nikhil/sdubootcamp1/solid-telegram/docker-nishant
+      dockerfile: Dockerfile
+    container_name: nishant-mysql-database
+    restart: always
+    ports:
+      - 4003:3306
+    volumes:
+      - testdb:/var/lib/mysql
+    

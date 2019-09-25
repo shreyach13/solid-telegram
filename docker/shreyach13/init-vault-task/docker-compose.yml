@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  vault:
+    #image: shreyavault
+    build:
+      context: .
+    ports:
+      - "8200:8200"
+    restart: always
+  open_vault:
+    build:
+      context: .
+    environment:
+      VAULT_ADDR: 'http://vault:8200'
+    command: './init_vault.sh'

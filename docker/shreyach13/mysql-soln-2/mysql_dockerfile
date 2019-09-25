@@ -1,0 +1,7 @@
+FROM mysql:5.7
+WORKDIR /home/app
+ADD mybash.sh /
+#Build time
+RUN chmod +x /mybash.sh
+#Run time
+CMD ["/mybash.sh"]

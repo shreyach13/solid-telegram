@@ -141,3 +141,19 @@ $ docker-compose down
 
 # Will connect to a running container (instead of docker exec -it fffffff sh)
 $ docker-compose exec my_app sh
+
+
+REDUCING IMAGE SIZE
+
+MULTI-STAGE BUILDS
+- Only take artifacts from previous stages into future stages
+- Results in much smaller images being built
+
+COMBINE ADD/COPY/RUN COMMANDS as often as possible
+- Connecting commands with && will run all commands (including any cleanup actions) in the same layer
+
+SQUASHING LAYERS
+- With latest docker, it is possible to add the --squash option when building. This will result in the final image being smaller BUT will affect the history
+
+Scanning images for Security weaknesses
+Snyk (used by SDU)
