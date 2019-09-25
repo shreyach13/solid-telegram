@@ -5,5 +5,4 @@ variable "server_port" {
 
 variable "security_group_id" {
   description = "This port will be used for http requests"
-  
 }
