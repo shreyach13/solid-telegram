@@ -5,5 +5,5 @@ output "webserver-public-ip" {
 
 output "blue-sg-group" {
   description = "Display the public ip of the server"
-  value       = module.security.blue-sggroup
+  value       = module.security.security_group_name
 }

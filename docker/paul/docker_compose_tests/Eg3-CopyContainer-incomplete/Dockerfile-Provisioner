@@ -1,0 +1,7 @@
+FROM mysql:5.7
+
+# Place script in the startup directory
+WORKDIR /docker-entrypoint-initdb.d/
+
+COPY schema.sql .
+

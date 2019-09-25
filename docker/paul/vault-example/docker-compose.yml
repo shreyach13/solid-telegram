@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  my_vault:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8200:8200'
+
+  vault_setup:
+    build:
+      context: .
+      dockerfile: Dockerfile-InitVault
+    environment:
+      VAULT_ADDR: http://my_vault:8200

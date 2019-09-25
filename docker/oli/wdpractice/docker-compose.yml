@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  vault:
+    container_name: vault-oli
+    ports:
+      - "8200:8200"
+    restart: always
+    build:
+      context: .
+
+  initialize:
+    container_name: initialize
+    build:
+      context: .
+    environment:
+      VAULT_ADDR: http://vault:8200
+    command: '/initialize.sh'

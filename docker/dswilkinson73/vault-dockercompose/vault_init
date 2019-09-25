@@ -1,0 +1,7 @@
+FROM dswvault:latest
+  
+WORKDIR /
+ADD ./vault_init.sh /vault_init.sh
+RUN chmod +x /vault_init.sh
+CMD ["/vault_init.sh"]
+

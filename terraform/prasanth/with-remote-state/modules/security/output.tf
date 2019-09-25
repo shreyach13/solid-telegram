@@ -1,4 +1,4 @@
-output "security_group_id"{
+output "mikes_security_id"{
 description="the security group id"
-value=aws_security_group.instance.id.name
+value=aws_security_group.instance.name
 }

@@ -1,0 +1,5 @@
+FROM mysql:5.7
+COPY dbcreate.sh /
+RUN chmod +x /dbcreate.sh
+CMD ["touch", "/test"]
+CMD ["/dbcreate.sh"]

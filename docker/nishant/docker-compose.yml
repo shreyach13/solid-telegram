@@ -1,0 +1,20 @@
+version: '2.0'
+
+services:
+  nishant-mysql-database:
+    container_name: nishant-mysql-database1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 4003:3306
+    volumes:
+      - testdb1:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root007
+    command: --init-file /home/app/create_db.py
+volumes:
+  testdb1: {}
+
+    
