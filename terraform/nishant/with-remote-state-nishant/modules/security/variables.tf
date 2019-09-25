@@ -1,7 +1,7 @@
 variable "from_port" {
-    default = "9000"
+    default = "8080"
 }
 
 variable "to_port" {
-    default = "9000"
+    default = "8080"
 }
