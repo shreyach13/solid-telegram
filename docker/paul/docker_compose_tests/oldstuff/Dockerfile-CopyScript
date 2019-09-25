@@ -1,0 +1,10 @@
+FROM mysql:5.7
+
+WORKDIR /home/app
+
+COPY dbcreate .
+RUN chmod +x /home/app/dbcreate
+
+#RUN npm install
+
+CMD ["sh", "/home/app/dbcreate"]
