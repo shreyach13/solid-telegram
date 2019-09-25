@@ -1,0 +1,9 @@
+FROM node:current-alpine
+
+WORKDIR /home/app
+
+COPY SimpleWeb/ ./
+
+RUN npm install
+
+CMD ["npm", "start"]

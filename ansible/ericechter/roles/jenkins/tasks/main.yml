@@ -29,6 +29,7 @@
 - name: Flush Handlers
   meta: flush_handlers
 - shell: sudo systemctl enable jenkins
+- shell: sudo service jenkins start
 - name: Wait until the password file shows up
   wait_for:
     path: /root/.jenkins/secrets/initialAdminPassword
