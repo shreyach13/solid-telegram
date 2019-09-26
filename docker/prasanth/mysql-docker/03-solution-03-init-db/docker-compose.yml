@@ -1,0 +1,17 @@
+version: '2.0'
+
+services:
+  prasanth-mysql-database:
+    container_name: prasanth-mysql-database1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 4003:3306
+    volumes:
+      - testdb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=test123
+volumes:
+  testdb: {}
