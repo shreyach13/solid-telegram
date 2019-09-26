@@ -1,0 +1,16 @@
+#Change the container to a default working dir.
+FROM mysql:5.7
+
+WORKDIR /home/app
+
+#Copy the sql init files which we want to start later
+COPY init_db.sql /home/app
+
+#CMD "startup.sh"
+
+#
+# a while loop checking if mysql is up and running
+#
+# a while loop checking if mysqld is accepting command, eg use show databases;
+#
+# create your database/start etc. whatever you want.
