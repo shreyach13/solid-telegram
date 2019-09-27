@@ -1,0 +1,107 @@
+ROOT Account - best practices
+- Dont generate access keys - or remove them, or cyle them if they are absolutely needed
+- Use a HSM for root account
+- Create users/groups and do all administration through a user in admin group
+
+General IAM recommendations
+
+- Assign policies (and permissions) to groups,
+- Assign users to groups
+
+- Create roles for services
+- Assign policies to roles
+- Assign roles to groups
+
+You can assume roles - you cannot assume a group
+
+General Advice
+
+Readonly is also dangerous, as it exposes data - which perhaps shouldnt be exposed ie. Tesco's parking app giving access to millions of car registration plates...
+
+Letterbox analogy
+- Put letters in, cannot see other letters, nor letter deposited ie. like a write Only policy
+
+Local cookies give access to resources - a compromised system could mean that cookies are taken and a bad actor can use them maliciously
+
+Tail-Gating through a security gate
+- Is like using somebody else's access rights
+
+Principal of Least security
+
+Browser ideas (Chrome)
+- Setup personas to allow using different IDs ie. in the same service
+
+Envelope Security
+
+Port Knocking is like Hagrid opening door in Harry Potter - presses a bunch of stones (ports) before real door (ie. port 22) is presented
+
+Loris exploit - opens connections and makes slow requests, ultimately choking available sessions (even though ie. instance CPU is inactive)
+
+Create ACCESS policies
+
+4 Parts of a typical Policy
+- Effect
+- Action
+- Resource
+- Condition
+
+Generally there will be a bunch of allow rdefinitions and a final deny scope...
+- Deny rules ALWAYS override allow Rules
+- Policies can be layered (or combined)
+- Need to define policy based on business requirements of the process
+    - Only ever give as few privileges as needed
+
+Typically name services and users so it is easy to identify a user or services
+ie. user.$USERNAME, service.$SERVICENAME
+
+Typically services only require very specific access, whereas users have more privileges. At least if a service with a few privs is compromised, it has a relatively small blast radius...
+
+For users, regularly recycle keys to prevent long-term compromise if the keys are leaked...
+
+Example AWS service = STS (Security Token Service) - gives tokens that allow users to assume other roles ie. perform different tasks than their default policy allows
+
+Complexity of creating new policies
+
+AWS Organisations
+- Allow definition of sub-OUs using different SCP policies
+- All billing goes to the root account
+
+- SCP = Service Control Policy
+   - Can influence root behaviour in sub-OUs
+   - Delivers over-arching policies driving different sub-OUs
+   - One of the things that can control root accounts
+      - root accounts arent controlled by IAM policies
+
+Master account
+      |
+  Organisations                    <- Like an IAM group
+   |    |     |
+Child  Dev  Accounts
+
+Security Considerations for Common DevOps tools
+
+Issue when using tools like JENKINS in environments, is that the JENKINS instance gets GOD mode,
+
+Could use AWS Code Pipeline etc tools, which are managed services, as these are much better supported from IAM (vs no real IAM with JENKINS). This means
+
+TERRAFORM is another thing that effectively has GOD mode for provisioning. Could use CloudFormation. This has IAM roles, can use MFA when on the console, and can use Service Catalog. We can use a SC wrapper around various components requiring permissions, then
+
+AWS Security Services/Tools
+
+DDOS attacks - Cloudfront can act as a filter and stops DDOS traffic
+
+AWS Shield / WAF
+
+AWS GuardDuty - VPC flow logs, Route 53 requests
+  - Alerts if unusual activity detected
+  - Can be used to pass all alerts/events to a central GuardDuty server
+  - Behind the scenes, GD watches traffic for all accounts, thus it learns over time
+
+Beyond S3 and EBS, applications are generally one of the biggest security
+
+AWS Inspector
+  - Will analyse ie. an EC2 instance (maybe ECS in future) and check if any known vulnerabilities exist
+
+WAF - Web Application filter
+  - Rules that are put in front of service
+     - Either in front CloudFront or LoadBalancer
