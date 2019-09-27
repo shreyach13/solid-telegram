@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  mysql:
+    volumes:
+      - my_sql_db:/var/lib/mysql
+    build:
+      context: .
+      dockerfile: Dockerfile_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: zaq123
+      MYSQL_ROOT_USER: root
+      MYSQL_USER: root
+    command: --init-file /home/app/init_db.sql
+    container_name: my_sql_db
+  my_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my_web_server
+    ports:
+      - '8080:8080'
+
+volumes:
+  my_sql_db:
