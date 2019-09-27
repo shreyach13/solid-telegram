@@ -35,9 +35,16 @@ path "kv/letterbox*" {
 vault token create -policy consumer
 VAULT_TOKEN=YYYYYYYYYYYYYYYYY vault kv get kv/letterbox
 
-# Restrict the access rights for producer to only write
+# Restrict the access rights for producer to only write to specific path
 vault policy write producer producer-restricted.hcl
 vault policy list
+
+path "kv/letterbox" {
+    capabilities = [
+        "create",
+        "update",
+    ]
+}
 
 # Get producer token again (can do as still have root token exported)
 vault token create -policy producer -ttl 900
