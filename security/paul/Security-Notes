@@ -1,5 +1,6 @@
 ROOT Account - best practices
-- Dont generate access keys - or remove them, or cyle them if they are absolutely needed
+- Dont generate access keys - or remove them,
+    - cycle them if they are absolutely needed
 - Use a HSM for root account
 - Create users/groups and do all administration through a user in admin group
 
@@ -21,12 +22,15 @@ Readonly is also dangerous, as it exposes data - which perhaps shouldnt be expos
 Letterbox analogy
 - Put letters in, cannot see other letters, nor letter deposited ie. like a write Only policy
 
+WARNING!!
 Local cookies give access to resources - a compromised system could mean that cookies are taken and a bad actor can use them maliciously
 
 Tail-Gating through a security gate
 - Is like using somebody else's access rights
 
 Principal of Least security
+
+Principal to limit blast radius if something is compromised
 
 Browser ideas (Chrome)
 - Setup personas to allow using different IDs ie. in the same service
@@ -45,7 +49,7 @@ Create ACCESS policies
 - Resource
 - Condition
 
-Generally there will be a bunch of allow rdefinitions and a final deny scope...
+Generally there will be a bunch of allow definitions and a final deny scope...
 - Deny rules ALWAYS override allow Rules
 - Policies can be layered (or combined)
 - Need to define policy based on business requirements of the process
