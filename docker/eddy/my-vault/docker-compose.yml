@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+
+  vault_def:
+    image: kluisje:latest
+    container_name: create_vault
+    hostname: vault_host
+    ports:
+      - '8200:8200'
+
+  vault_init:
+    build:
+      context: .
+      dockerfile: Dockerfile_init_vault
+    container_name: init_vault
+    environment:
+      VAULT_ADDR: http://vault_def:8200

@@ -1,0 +1,23 @@
+version: '3.0'
+
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - /Users/prasanth.sasidharan/solid-telegram/solid-telegram/docker/prasanth:/test1
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: root123
+       MYSQL_DATABASE: test            
+   web-app:
+     build:
+        context: .
+        dockerfile: Dockerfile
+     ports:
+       - "8080:8080"
+     
+         
+       
+
+
+       
