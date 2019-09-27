@@ -43,7 +43,7 @@ vault kv put kv/mike value=awesome
 
 
 ```
-path "kv/letterbox" {
+path "kv/letterbox*" {
     capabilities = [
         "create",
         "read",
