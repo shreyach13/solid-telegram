@@ -3,6 +3,5 @@
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
-vault
 *.zip
 *.patch

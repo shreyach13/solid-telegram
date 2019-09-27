@@ -1,0 +1,7 @@
+FROM kluisje:latest
+
+COPY init_vault.sh /
+
+RUN chmod 755 /init_vault.sh
+
+CMD ["/init_vault.sh"]
