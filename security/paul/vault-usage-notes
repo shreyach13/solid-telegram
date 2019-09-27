@@ -24,6 +24,13 @@ vault kv get kv/letterbox
 # Setup a consumer (reader)
 vault policy write consumer consumer.hcl
 
+path "kv/letterbox*" {
+    capabilities = [
+        "read",
+        "list",
+    ]
+}
+
 # Create a token for the consumer and read value
 vault token create -policy consumer
 VAULT_TOKEN=YYYYYYYYYYYYYYYYY vault kv get kv/letterbox
