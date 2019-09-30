@@ -146,48 +146,5 @@ AWS Config
 SCP and key policies are the ONLY aspects of AWS where "ROOT" doesnt have control
 
 Boundary Policy -
-- Limits the permissions that may be associated with ie. a newly created IAM user. Whatever policy is applied will be inherited by anything down the chain. Similar to SCP in concept.
+- Limits the permissions that may be associated with ie. a newly created IAM user. A boundary policy is applied to a user that has IAM access, so that even though the user can create/update any user (with ie. admin privs), whatever the boundary policy is, will limit what IAM privileges they can actually grant. Likewise, a different boundary policy can be applied to any user created (ie. even though admin rights are given, policy will define subset). Similar to SCP in concept.
 
-
-
-520  vault status
-521  vault secrets enable -path kv kv
-522  vault status
-523  vault secrets list
-525  vault kv put kv/paul value=awesome
-526  vault secrets list
-527  vault kv get kv/paul
-541  vault policy write producer producer.hcl
-542  vault policy list
-543  vault token create -policy producer
-544  vault token create -policy producer -ttl 900
-
-520  vault status
-  521  vault secrets enable -path kv kv
-  522  vault status
-  523  vault secrets list
-  525  vault kv put kv/paul value=awesome
-  526  vault secrets list
-  527  vault kv get kv/paul
-  541  vault policy write producer producer.hcl
-  542  vault policy list
-  543  vault token create -policy producer
-  544  vault token create -policy producer -ttl 900
-  546  history | grep vault
-  547  vault token create -policy producer
-  549  VAULT_TOKEN=s.2w9jzskxAWQCyZjCVAr2AKLk vault kv put kv/letterbox value=producer-was-here
-  550  vault kv get kv/letterbox
-  554  vault policy write consumer consumer.hcl
-  556  history|grep vault
-  557  vault token create -policy consumer
-  558  VAULT_TOKEN=s.NkhMbGvXYUIdCrngOJaPyfYM vault kv get kv/letterbox
-  563  history|grep vault
-  564  vault policy write producer producer-restricted.hcl
-  565  vault policy list
-  566  vault token create -policy producer -ttl 900
-  567  VAULT_TOKEN=s.eXBOUKJc5tcyxWjjvc35zWgd vault kv put kv/letterbox-asdf value=foo
-  568  VAULT_TOKEN=s.eXBOUKJc5tcyxWjjvc35zWgd vault kv put kv/letterbox value=foo
-  569  history | grep vault
-  571  vault policy read producer-restricted.hcl
-  572  vault policy read producer
-  574  history|grep vault

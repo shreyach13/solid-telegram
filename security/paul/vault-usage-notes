@@ -1,0 +1,52 @@
+# With VAULT_TOKEN set with root
+vault status
+
+# Create a new store - kv
+vault secrets enable -path kv kv
+vault secrets list
+
+# Add/get a value for kv/paul
+vault kv put kv/paul value=awesome
+vault kv get kv/paul
+
+# Setup a new producer (reader with all privs)
+vault policy write producer producer.hcl
+vault policy list
+
+# Create a token for the producer (also 15m)
+vault token create -policy producer
+vault token create -policy producer -ttl 900
+
+# Use the prodcuer token (not root)
+VAULT_TOKEN=XXXXXXXXXXXXXXXXXX vault kv put kv/letterbox value=producer-was-here
+vault kv get kv/letterbox
+
+# Setup a consumer (reader)
+vault policy write consumer consumer.hcl
+
+path "kv/letterbox*" {
+    capabilities = [
+        "read",
+        "list",
+    ]
+}
+
+# Create a token for the consumer and read value
+vault token create -policy consumer
+VAULT_TOKEN=YYYYYYYYYYYYYYYYY vault kv get kv/letterbox
+
+# Restrict the access rights for producer to only write to specific path
+vault policy write producer producer-restricted.hcl
+vault policy list
+
+path "kv/letterbox" {
+    capabilities = [
+        "create",
+        "update",
+    ]
+}
+
+# Get producer token again (can do as still have root token exported)
+vault token create -policy producer -ttl 900
+VAULT_TOKEN=XXXXXXXXXXXXXXXXXX vault kv put kv/letterbox-asdf value=foo
+VAULT_TOKEN=XXXXXXXXXXXXXXXXXX vault kv put kv/letterbox value=foo
