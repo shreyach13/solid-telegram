@@ -1,0 +1,176 @@
+- Maximum # of nodes in a k8s cluster
+- Maximum # of pods per node = 125
+- Typical k8s setup = 3 masters + 3 nodes
+    - Add more nodes (or masters depending on apps in pods)
+
+- All k8s setup uses yaml
+- Configmaps
+    kind: Kustomization
+- Secrets
+    kind: Secrets
+
+Deployments can reference Configmaps and Secrets at runtime
+    kind: Deployment
+
+Deployments
+  - Written in a declarative language
+  - Can be defined to add/remove ReplicaSets
+  - User defined roll-out strategies
+      - By default will do blue/green
+
+- Deployments use ReplicaSets to deploy
+
+DAEMONSETs
+
+A daemonSet ensures all Nodes (or a specific amount) are running a specific copy of a Pod
+     kind: Daemonset
+- Running a cluster storage daemon, such as glusterd, ceph, on each node.
+- Running logs collection daemon on every node, such as fluentd or logstash.
+- Running a node monitoring daemon on every node
+
+NAMESPACES (~150 per cluster)
+
+Kubernetes supports multiple virtual clusters backed by the same physical cluster. These virtual clusters are called namespaces.
+It helps different projects, teams, or customers to share a Kubernetes cluster by providing:
+- A scope for Names (everything in Kubernetes is identifiable by name and UID).
+- A mechanism to attach authorization and policy to a subsection of the cluster.
+
+$ kubectl create namespace test-ns
+namespace/test-ns created
+$ kubectl create deployment my-fs-dp --image=hello-world --namespace=test-ns
+deployment.apps/my-fs-dp created
+
+$ kubectl get namespaces
+NAME              STATUS   AGE
+default           Active   156m
+docker            Active   155m
+kube-node-lease   Active   156m
+kube-public       Active   156m      <- Can be deleted (for public apps)
+kube-system       Active   156m      <- Runs core components of k8s
+test-ns           Active   111s      <- newly added namespace
+
+$ kubectl get pods -n kube-system
+NAME                                     READY   STATUS    RESTARTS   AGE
+coredns-fb8b8dccf-m7c9w                  1/1     Running   0          157m
+coredns-fb8b8dccf-z6l8z                  1/1     Running   0          157m
+etcd-docker-desktop                      1/1     Running   0          156m
+kube-apiserver-docker-desktop            1/1     Running   0          156m
+kube-controller-manager-docker-desktop   1/1     Running   0          156m
+kube-proxy-gkr4b                         1/1     Running   0          157m
+kube-scheduler-docker-desktop            1/1     Running   0          154m
+
+$ kubectl get pods -n test-ns
+NAME                        READY   STATUS             RESTARTS   AGE
+my-fs-dp-6d95856745-rtqb2   0/1     CrashLoopBackOff   5          4m26s
+
+$ kubectl get pods --all-namespaces
+
+$ kubectl logs my-fs-dp-6d95856745-rtqb2 -n test-ns
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+$ k delete deployment my-fs-dp -n test-ns
+deployment.extensions "my-fs-dp" deleted
+
+$ k delete ns test-ns
+namespace "test-ns" deleted
+
+VOLUMES
+
+Persisting data on containers is feasible with one of the following ways:
+- Host based - emptyDir and hostPath
+- Cloud Based - awsElasticBlockStore, azureDisk, gcePersistentDisk
+- Network Storage or Distributed Storage - nfs, cephfs, glusterfs
+
+emptyDir
+● Creates an empty directory into a container
+● Persistent data in case of container failure but data will get lost if the container is scheduled elsewhere
+Should be used if temporary data persistence is needed to work around the problem of pods restarting.
+
+hostPath
+Mounts a local directory of the host in the container
+● Specific data can be used
+● Application data which can be synced via rsync
+
+AWS EBS Volumes
+An awsElasticBlockStore volume mounts an Amazon Web Services (AWS) EBS Volume into your Pod.
+- Contents of EBS are preserved
+    - Pre-populated with data
+    - Data can be given to other pods
+Restrictions
+- Nodes on which Pods are running must be AWS EC2 instances
+- Those instances need to be in the same region and availability-zone as the EBS volume
+- EBS only supports a single EC2 instance mounting a volume
+- Does not support ReadWriteMany
+
+Deployment Example
+$ k apply -f mysql_first_deployment.yaml
+service/mysql created
+deployment.apps/mysql created
+
+$ k get pods -l "app=mysql"
+NAME                     READY   STATUS    RESTARTS   AGE
+mysql-76f657464d-czgw6   1/1     Running   0          6m6s
+
+$ k describe pods mysql-76f657464d-czgw6
+Name:           mysql-76f657464d-czgw6
+Namespace:      default
+Priority:       0
+Node:           docker-desktop/192.168.65.3
+Start Time:     Mon, 30 Sep 2019 14:14:04 +0200
+Labels:         app=mysql
+..
+..
+Events:
+  Type    Reason     Age    From                     Message
+  ----    ------     ----   ----                     -------
+  Normal  Scheduled  7m38s  default-scheduler        Successfully assigned default/mysql-76f657464d-czgw6 to docker-desktop
+  Normal  Pulling    7m37s  kubelet, docker-desktop  Pulling image "mysql:5.6"
+  Normal  Pulled     7m17s  kubelet, docker-desktop  Successfully pulled image "mysql:5.6"
+  Normal  Created    7m17s  kubelet, docker-desktop  Created container mysql
+  Normal  Started    7m16s  kubelet, docker-desktop  Started container mysql
+
+
+Access the deployment - use -c if there are more than one containers in the pod
+$ k exec -it mysql-76f657464d-czgw6 [ -c mysql ] bash
+root@mysql-76f657464d-czgw6:/#
+
+Delete the deploment
+$ k delete -f mysql_first_deployment.yaml
+service "mysql" deleted
+deployment.apps "mysql" deleted
+
+# Start port forwarding to be able to view k8s nginx pod via local browser
+$ k port-forward nginx-8479895894-h6mv5 32000:80
+
+AWS EKS
+- Use either eksctl or kops to manage
+
+$ kubectl cluster-info
+Kubernetes master is running at https://kubernetes.docker.internal:6443
+KubeDNS is running at https://kubernetes.docker.internal:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+$ curl -k https://kubernetes.docker.internal:6443
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {
+
+  },
+  "status": "Failure",
+  "message": "forbidden: User \"system:anonymous\" cannot get path \"/\"",
+  "reason": "Forbidden",
+  "details": {
+
+  },
+  "code": 403
+
+  $ docker images | grep k8s
+  k8s.gcr.io/kube-proxy                                      v1.14.3             004666307c5b        3 months ago        82.1MB
+  k8s.gcr.io/kube-apiserver                                  v1.14.3             9946f563237c        3 months ago        210MB
+  k8s.gcr.io/kube-controller-manager                         v1.14.3             ac2ce44462bc        3 months ago        158MB
+  k8s.gcr.io/kube-scheduler                                  v1.14.3             953364a3ae7a        3 months ago        81.6MB
+  k8s.gcr.io/coredns                                         1.3.1               eb516548c180        8 months ago        40.3MB
+  k8s.gcr.io/etcd                                            3.3.10              2c4adeb21b4f        10 months ago       258MB
+  k8s.gcr.io/pause                                           3.1                 da86e6ba6ca1        21 months ago       742kB
