@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mycontainers
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: shared-vol
+      emptyDir: {}
+
+  containers:
+
+  - name: nginx-container
+    image: nginx
+    volumeMounts:
+    - name: shared-vol
+      mountPath: /usr/share/nginx/html
+
+  - name: ubuntu-container
+    image: ubuntu
+    volumeMounts:
+    - name: shared-vol
+      mountPath: /my-data
+    command: ["/bin/sh"]
+    args: ["-c", "echo Eric says, Hello World > /my-data/index.html"]
