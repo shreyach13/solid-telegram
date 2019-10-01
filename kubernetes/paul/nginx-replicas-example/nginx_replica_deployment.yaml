@@ -3,17 +3,20 @@ kind: Service
 metadata:
   name: nginx
 spec:
+  type: LoadBalancer
   ports:
   - port: 80
+    protocol: TCP
+    targetPort: 9999
   selector:
     app: nginx
-  clusterIP: None
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: nginx
@@ -36,11 +39,11 @@ spec:
       - image: nginx
         name: nginx-deploy-index
         command: ["/bin/bash"]
-        args: ["-c", "echo `date` - This is Pauls Updated Page > /usr/share/nginx/html/index.html"]
+        args: ["-c", "echo `date` - This is Pauls Updated Page > /mnt/index.html"]
         volumeMounts:
         - name: nginx-persistent-storage
-          mountPath: /usr/share/nginx/html
+          mountPath: /mnt
       volumes:
       - name: nginx-persistent-storage
         hostPath:
-          path: /Users/paul.broughton/data
+          path: /Users/paul.broughton/data/nginx_replicas
