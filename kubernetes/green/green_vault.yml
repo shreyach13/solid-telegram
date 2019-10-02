@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green-vault
+spec:
+  selector:
+    matchLabels:
+      app: green-vault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: green-vault
+    spec:
+      containers:
+      - image: vault:1.2.3
+        name: green-vault
+        command: ["/bin/sh"]
+        args: ["-c", "vault server -config vault.hcl"]
+        ports:
+        - containerPort: 8200
+          name: green-vault
+        volumeMounts:
+        - name: green-vault-volume
+          mountPath: /mnt/vault/data
+      volumes:
+      - name: green-vault-volume
+        emptyDir: {}
