@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 9999
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: nginx
+        volumeMounts:
+        - name: nginx-persistent-storage
+          mountPath: /usr/share/nginx/html
+      - image: nginx
+        name: nginx-deploy-index
+        command: ["/bin/bash"]
+        args: ["-c", "echo `date` - This is Pauls Updated Page > /mnt/index.html"]
+        volumeMounts:
+        - name: nginx-persistent-storage
+          mountPath: /mnt
+      volumes:
+      - name: nginx-persistent-storage
+        hostPath:
+          path: /Users/paul.broughton/data/nginx_replicas

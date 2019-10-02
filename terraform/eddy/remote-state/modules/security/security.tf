@@ -13,6 +13,6 @@ resource "aws_security_group" "blue-instance-eddy" {
   }
 }
 
-resource "random_id" "myrandom" {
-  byte_length = 3
-}
+# resource "random_id" "myrandom" {
+#   byte_length = 3
+# }
