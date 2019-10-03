@@ -10,7 +10,7 @@ echo "VAULT_ADDR=$VAULT_ADDR"
 # Simple wait loop for vault server
 set -euo pipefail
 
-while ! curl $VAULT_ADDR/v1/sys/health | grep initialized; do
+while ! curl $VAULT_ADRRESS/v1/sys/health | grep initialized; do
     echo "Waiting for vault to accept connections"
     sleep 1;
 done
