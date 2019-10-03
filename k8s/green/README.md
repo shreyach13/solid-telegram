@@ -9,12 +9,12 @@ A hostPath based volume is used to store output generated during the Vault setup
 Note : nodeSelector statements are needed in both green_vault and daemonset files in order to force a specific AWS EKS host - otherwise, the hostPath volume cannot be guaranteed...
 
 How to run...
-1. $ kubectl apply -f config.yml
-2. $ kubectl apply -f green_vault.yml
-3. $ kubectl apply -f daemonset.yml
+1. $ kubectl apply -f config.yml        (creates configMaps)
+2. $ kubectl apply -f green_vault.yml   (runs and configures vault)
+3. $ kubectl apply -f daemonset.yml     (copies the vault's SSH public key to the selected AWS node)
 
 Current Issues
-- Setup/ssh containers continuously restart - preventing this with a 3600 sleep...
+- Setup/ssh containers continuously restart (preventing this with a 3600 sleep...)
   (should convert to use initContainers)
 - For single file triggering
 
