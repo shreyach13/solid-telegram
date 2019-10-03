@@ -29,6 +29,8 @@ spec:
           mountPath: /usr/local/bin/vault
         - name: host
           mountPath: /etc/ssh
+        - name: green-vault-runtime
+          mountPath: /tmp
       volumes:
       - name: green-vault-ssh
         configMap:
@@ -37,3 +39,5 @@ spec:
       - name: host
         hostPath:
           path: /etc/ssh
+      - name: green-vault-runtime
+        emptyDir: {}

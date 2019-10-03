@@ -51,6 +51,9 @@ spec:
         volumeMounts:
         - name: green-vault-setup
           mountPath: /usr/local/bin
+        volumeMounts:
+        - name: green-vault-runtime
+          mountPath: /tmp
       volumes:
       # Volume for VAULT defined in vault.hcl
       - name: green-vault-runtime
