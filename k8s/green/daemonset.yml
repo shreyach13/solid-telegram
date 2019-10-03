@@ -21,6 +21,9 @@ spec:
         name: green-vault-ssh
         command: ["/bin/sh"]
         args: [ "-c", "/usr/local/bin/vault/ssh-dump.sh"]
+        env:
+        - name: VAULT_ADDR
+          value: http://green-vault:8200
         volumeMounts:
         - name: green-vault-ssh
           mountPath: /usr/local/bin/vault
