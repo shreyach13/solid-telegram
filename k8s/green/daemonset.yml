@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vault-ssh
+  namespace: green
+  labels:
+    k8s-app: green-vault
+spec:
+  containers:
+  - image: alpine:3
+    name: green-vault-ssh
+    command: ["/bin/sh"]
+    args: [ "-c", "/usr/local/bin/ssh_dump.sh"]
+  volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+  volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
