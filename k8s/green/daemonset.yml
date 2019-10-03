@@ -11,6 +11,8 @@ spec:
     name: green-vault-ssh
     command: ["/bin/sh"]
     args: [ "-c", "/usr/local/bin/ssh_dump.sh"]
+  nodeSelector:
+  failure-domain.beta.kubernetes.io/zone: eu-central-1c
   volumeMounts:
         - name: green-vault-ssh
           mountPath: /usr/local/bin
