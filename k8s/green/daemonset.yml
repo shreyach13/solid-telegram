@@ -20,7 +20,7 @@ spec:
       - image: vault:1.2.3
         name: green-vault-ssh
         command: ["/bin/sh"]
-        args: [ "-c", "/usr/local/bin/vault/ssh_dump.sh"]
+        args: [ "-c", "/usr/local/bin/vault/ssh-dump.sh"]
         volumeMounts:
         - name: green-vault-ssh
           mountPath: /usr/local/bin/vault
