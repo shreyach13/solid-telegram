@@ -8,6 +8,23 @@ configure_vault.sh is deployed (via a configMap) to /usr/local/bin on container2
 
 Current Issues
 - Setup container continuously restarts - preventing this with a 3600 sleep...
+<<<<<<< HEAD
+=======
+
+```bash
+.
+├── README.md
+├── config.yml
+├── configmap
+│   ├── configure_vault.sh
+│   ├── ssh-dump.sh
+│   └── vault.hcl
+├── daemonset.yml
+└── green_vault.yml
+
+1 directory, 7 files
+```
+>>>>>>> green
 
 ```bash
 .

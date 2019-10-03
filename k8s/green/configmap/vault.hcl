@@ -1,5 +1,5 @@
 storage "file" {
-  path = "/mnt/vault/data"
+  path = "/mnt/vault/data1"
 }
 
 disable_mlock = true

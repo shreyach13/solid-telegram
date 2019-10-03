@@ -21,9 +21,6 @@ vault operator init -key-shares 1 -key-threshold 1 >  $TMP_VAULT_DATA
 SEAL_KEY=`cat $TMP_VAULT_DATA | grep ^Unseal | awk ' { print $NF } '`
 ROOT_KEY=`cat $TMP_VAULT_DATA | grep "Initial Root" | awk ' { print $NF } '`
 
-# Remove TMP_VALUE_DATA
-rm -f $TMP_VAULT_DATA
-
 # echo details (for debugging)
 echo "SEAL_KEY=$SEAL_KEY"
 echo "ROOT_KEY=$ROOT_KEY"
@@ -55,7 +52,7 @@ vault write ssh/roles/default -<<"EOH"
     }
   ],
   "key_type": "ca",
-  "default_user": "ubuntu",
+  "default_user": "ec2-user",
   "ttl": "30m0s"
 }
 EOH
