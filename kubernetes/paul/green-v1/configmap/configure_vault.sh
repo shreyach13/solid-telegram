@@ -1,5 +1,10 @@
 TMP_VAULT_DATA=/tmp/vault.init
 
+apk --no-cache add \
+      bash \
+      ca-certificates \
+      curl
+
 echo "VAULT_ADDR=$VAULT_ADDR"
 
 # Simple wait loop for vault server
@@ -34,3 +39,7 @@ vault operator unseal "$SEAL_KEY"
 
 # Write a simple K/V value
 #vault kv put secret/foo value=bar
+
+# Setup SSH CA
+vault secrets enable ssh
+vault write ssh/config/ca generate_signing_key=true

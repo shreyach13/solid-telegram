@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-vault
+  namespace: green
+spec:
+  ports:
+  - port: 8200
+  selector:
+    app: green-vault
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green-vault
+  namespace: green
+spec:
+  selector:
+    matchLabels:
+      app: green-vault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: green-vault
+    spec:
+      containers:
+      - image: vault:1.2.3
+        name: green-vault
+        command: ["/bin/sh"]
+        args: ["-c", "vault server -config /mnt/init/vault.hcl"]
+        ports:
+        - containerPort: 8200
+          name: green-vault
+        volumeMounts:
+        - name: green-vault-hcl
+          mountPath: /mnt/init
+        - name: green-vault-runtime
+          mountPath: /mnt/vault
+      - image: vault:1.2.3
+        name: green-vault-setup
+        command: ["/bin/sh"]
+        args: [ "-c", "/usr/local/bin/configure_vault.sh ; sleep 3600"]
+        env:
+        - name: VAULT_ADDR
+          value: http://green-vault:8200
+        volumeMounts:
+        - name: green-vault-setup
+          mountPath: /usr/local/bin
+      volumes:
+      - name: green-vault-runtime
+        emptyDir: {}
+      - name: green-vault-setup
+        configMap:
+          name: vault-setup-script
+          defaultMode: 0777
+      - name: green-vault-hcl
+        configMap:
+          name: vault-hcl
+
