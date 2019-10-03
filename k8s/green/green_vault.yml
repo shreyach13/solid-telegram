@@ -64,4 +64,3 @@ spec:
       - name: green-vault-hcl
         configMap:
           name: vault-hcl
-
