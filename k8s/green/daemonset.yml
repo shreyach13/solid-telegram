@@ -20,7 +20,7 @@ spec:
       - image: vault:1.2.3
         name: green-vault-ssh
         command: ["/bin/sh"]
-        args: [ "-c", "/usr/local/bin/vault/ssh-dump.sh"]
+        args: [ "-c", "/usr/local/bin/vault/ssh-dump.sh ; sleep 3600"]
         env:
         - name: VAULT_ADDR
           value: http://green-vault:8200
@@ -40,4 +40,5 @@ spec:
         hostPath:
           path: /etc/ssh
       - name: green-vault-runtime
-        emptyDir: {}
+        hostPath:
+          path: /tmp

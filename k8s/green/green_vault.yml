@@ -26,6 +26,8 @@ spec:
       labels:
         app: green-vault
     spec:
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: eu-central-1c
       containers:
       # Main VAULT server container
       - image: vault:1.2.3
@@ -56,7 +58,8 @@ spec:
       volumes:
       # Volume for VAULT defined in vault.hcl
       - name: green-vault-runtime
-        emptyDir: {}
+        hostPath:
+          path: /tmp
       # Volume to reference configure_vault.sh
       - name: green-vault-setup
         configMap:
