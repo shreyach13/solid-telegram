@@ -1,23 +1,5 @@
 apiVersion: v1
 data:
-  vault.hcl: |
-    storage "file" {
-      path = "/mnt/vault/data"
-    }
-
-    disable_mlock = true
-
-    listener "tcp" {
-        address = "0.0.0.0:8200"
-        tls_disable = true
-    }
-kind: ConfigMap
-metadata:
-  name: vault-hcl
-  namespace: green
----
-apiVersion: v1
-data:
   configure_vault.sh: |+
     TMP_VAULT_DATA=/tmp/vault.init
 
@@ -82,9 +64,39 @@ kind: ConfigMap
 metadata:
   name: vault-setup-script
   namespace: green
+---
+apiVersion: v1
+data:
+  vault.hcl: |
+    storage "file" {
+      path = "/mnt/vault/data"
+    }
+
+    disable_mlock = true
+
+    listener "tcp" {
+        address = "0.0.0.0:8200"
+        tls_disable = true
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"vault.hcl":"storage \"file\" {\n  path = \"/mnt/vault/data\"\n}\n\ndisable_mlock = true\n\nlistener \"tcp\" {\n    address = \"0.0.0.0:8200\"\n    tls_disable = true\n}\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"vault-hcl","namespace":"green"}}
+  name: vault-hcl
+  namespace: green
+---
 apiVersion: v1
 data:
   ssh-dump.sh: |
+    TMP_VAULT_DATA=/tmp/vault.init
+
+    SEAL_KEY=`cat $TMP_VAULT_DATA | grep ^Unseal | awk ' { print $NF } '`
+    ROOT_KEY=`cat $TMP_VAULT_DATA | grep "Initial Root" | awk ' { print $NF } '`
+
+    # Setup VAULT_TOKEN
+    export VAULT_TOKEN="$ROOT_KEY"
+
     vault read -field=public_key ssh/config/ca > /etc/ssh/trusted-user-ca-keys.pem
 
     echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config
