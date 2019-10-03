@@ -1,23 +1,31 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: vault-ssh
+  name: green-vault-ssh
   namespace: green
   labels:
     k8s-app: green-vault
 spec:
-  containers:
-  - image: vault:1.2.3
-    name: green-vault-ssh
-    command: ["/bin/sh"]
-    args: [ "-c", "/usr/local/bin/ssh_dump.sh"]
-  nodeSelector:
-  failure-domain.beta.kubernetes.io/zone: eu-central-1c
-  volumeMounts:
+  selector:
+    matchLabels:
+      name: green-vault-ssh
+  template:
+    metadata:
+      labels:
+        name: green-vault-ssh
+    spec:
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: eu-central-1c
+      containers:
+      - image: vault:1.2.3
+        name: green-vault-ssh
+        command: ["/bin/sh"]
+        args: [ "-c", "/usr/local/bin/ssh_dump.sh"]
+        volumeMounts:
         - name: green-vault-ssh
           mountPath: /usr/local/bin
-  volumes:
+      volumes:
       - name: green-vault-ssh
         configMap:
-          name: node-ssh
           defaultMode: 0777
+        name: node-ssh
