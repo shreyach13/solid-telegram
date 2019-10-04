@@ -1,0 +1,232 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-vault
+  namespace: green-oneshot
+spec:
+  ports:
+  - port: 8200
+  selector:
+    app: green-vault
+  clusterIP: None
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green-vault
+  namespace: green-oneshot
+spec:
+  selector:
+    matchLabels:
+      app: green-vault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: green-vault
+    spec:
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: eu-central-1c
+      containers:
+      # Main VAULT server container
+      - image: vault:1.2.3
+        name: green-vault
+        command: ["/bin/sh"]
+        args: ["-c", "vault server -config /mnt/init/vault.hcl"]
+        ports:
+        - containerPort: 8200
+          name: green-vault
+        volumeMounts:
+        - name: green-vault-hcl
+          mountPath: /mnt/init
+        - name: green-vault-runtime
+          mountPath: /mnt/vault
+      # VAULT configuation container
+      - image: vault:1.2.3
+        name: green-vault-setup
+        command: ["/bin/sh"]
+        args: [ "-c", "/usr/local/bin/configure_vault.sh ; sleep 3600"]
+        env:
+        - name: VAULT_ADDR
+          value: http://localhost:8200
+          # value: http://green-vault.green-oneshot:8200
+        volumeMounts:
+        - name: green-vault-setup
+          mountPath: /usr/local/bin
+        - name: green-vault-runtime
+          mountPath: /tmp
+      volumes:
+      # Volume for VAULT defined in vault.hcl
+      - name: green-vault-runtime
+        hostPath:
+          path: /tmp
+      # Volume to reference configure_vault.sh
+      - name: green-vault-setup
+        configMap:
+          name: vault-setup-script
+          # Ensure files have execute perms
+          defaultMode: 0777
+      # Volume to reference vault.hcl
+      - name: green-vault-hcl
+        configMap:
+          name: vault-hcl
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: green-vault-ssh
+  namespace: green-oneshot
+  labels:
+    k8s-app: green-vault
+spec:
+  selector:
+    matchLabels:
+      name: green-vault-ssh
+  template:
+    metadata:
+      labels:
+        name: green-vault-ssh
+    spec:
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: eu-central-1c
+      containers:
+      - image: vault:1.2.3
+        name: green-vault-ssh
+        command: ["/bin/sh"]
+        args: [ "-c", "/usr/local/bin/vault/ssh-dump.sh ; sleep 3600"]
+        env:
+        - name: VAULT_ADDR
+          #value: http://green-vault:8200
+          value: http://localhost:8200
+        volumeMounts:
+        - name: green-vault-ssh
+          mountPath: /usr/local/bin/vault
+        - name: host
+          mountPath: /etc/ssh
+        - name: green-vault-runtime
+          mountPath: /tmp
+      volumes:
+      - name: green-vault-ssh
+        configMap:
+          defaultMode: 0777
+          name: node-ssh
+      - name: host
+        hostPath:
+          path: /etc/ssh
+      - name: green-vault-runtime
+        hostPath:
+          path: /tmp
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-setup-script
+  namespace: green-oneshot
+data:
+  configure_vault.sh: |+
+    TMP_VAULT_DATA=/tmp/vault.init
+
+    apk --no-cache add \
+          bash \
+          ca-certificates \
+          curl
+
+    echo "VAULT_ADDR=$VAULT_ADDR"
+
+    # Simple wait loop for vault server
+    set -euo pipefail
+
+    while ! curl $VAULT_ADDR/v1/sys/health | grep initialized; do
+        echo "Waiting for vault to accept connections"
+        sleep 1;
+    done
+
+    # Save the output text to get the SEAL_KEY and ROOT_KEY
+    vault operator init -key-shares 1 -key-threshold 1 >  $TMP_VAULT_DATA
+
+    SEAL_KEY=`cat $TMP_VAULT_DATA | grep ^Unseal | awk ' { print $NF } '`
+    ROOT_KEY=`cat $TMP_VAULT_DATA | grep "Initial Root" | awk ' { print $NF } '`
+
+    # echo details (for debugging)
+    echo "SEAL_KEY=$SEAL_KEY"
+    echo "ROOT_KEY=$ROOT_KEY"
+
+    # Setup VAULT_TOKEN
+    export VAULT_TOKEN="$ROOT_KEY"
+
+    # Unseal the vault
+    vault operator unseal "$SEAL_KEY"
+
+    # Setup a new secrets area
+    #vault secrets enable -path secret kv
+
+    # Write a simple K/V value
+    #vault kv put secret/foo value=bar
+
+    # Setup SSH CA
+    vault secrets enable ssh
+    vault write ssh/config/ca generate_signing_key=true
+
+    # Setup CA access and ttl
+    vault write ssh/roles/default -<<"EOH"
+    {
+      "allow_user_certificates": true,
+      "allowed_users": "*",
+      "default_extensions": [
+        {
+          "permit-pty": ""
+        }
+      ],
+      "key_type": "ca",
+      "default_user": "ec2-user",
+      "ttl": "30m0s"
+    }
+    EOH
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-hcl
+  namespace: green-oneshot
+data:
+  vault.hcl: |
+    storage "file" {
+      path = "/mnt/vault/data1"
+    }
+
+    disable_mlock = true
+
+    listener "tcp" {
+        address = "0.0.0.0:8200"
+        tls_disable = true
+    }
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-ssh
+  namespace: green-oneshot
+data:
+  ssh-dump.sh: |
+    TMP_VAULT_DATA=/tmp/vault.init
+
+    SEAL_KEY=`cat $TMP_VAULT_DATA | grep ^Unseal | awk ' { print $NF } '`
+    ROOT_KEY=`cat $TMP_VAULT_DATA | grep "Initial Root" | awk ' { print $NF } '`
+
+    # Setup VAULT_TOKEN
+    export VAULT_TOKEN="$ROOT_KEY"
+
+    vault read -field=public_key ssh/config/ca > /etc/ssh/trusted-user-ca-keys.pem
+
+    echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config
